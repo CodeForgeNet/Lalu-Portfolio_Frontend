@@ -22,6 +22,8 @@ type Source = {
   id: string;
   score?: number;
   metadata?: SourceMetadata;
+  text: string;
+  title?: string;
 };
 
 export default function Chat() {
@@ -35,13 +37,8 @@ export default function Chat() {
   ]);
   const [loading, setLoading] = useState(false);
   const [lastSources, setLastSources] = useState<Source[]>([]);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const chatBoxRef = useRef<HTMLDivElement>(null);
-
-  const suggestions = [
-    "Tell me about your AI Course Generator",
-    "What is your primary tech stack?",
-    "Show me your most recent project",
-  ];
 
   useEffect(() => {
     // Keep scroll at bottom when new messages arrive
@@ -50,6 +47,24 @@ export default function Chat() {
     }
   }, [messages, loading]);
 
+  useEffect(() => {
+    // Fetch initial suggestions when component mounts
+    const fetchInitialSuggestions = async () => {
+      try {
+        const res = await axios.post(
+          `${
+            process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"
+          }/api/suggest`,
+          {}
+        );
+        setSuggestions(res.data?.suggestions || []);
+      } catch (error) {
+        console.error("Error fetching initial suggestions:", error);
+      }
+    };
+    fetchInitialSuggestions();
+  }, []);
+
   const postMessage = async (text: string) => {
     if (!text.trim()) return;
 
@@ -57,16 +72,17 @@ export default function Chat() {
     setMessages((prev) => [...prev, userMsg]);
     setInput("");
     setLoading(true);
-    setLastSources([]);
+    setSuggestions([]); // Clear suggestions when a new question is asked
 
     try {
+      setLastSources([]);
       const res = await axios.post(
         `${
           process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"
         }/api/ask`,
         {
           question: text,
-          topK: 4,
+          topK: 3,
         }
       );
 
@@ -82,6 +98,10 @@ export default function Chat() {
       // Set sources from response
       const sources = res.data?.sources || [];
       setLastSources(sources);
+
+      // Set new suggestions from response
+      const suggestions = res.data?.suggestions || [];
+      setSuggestions(suggestions);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "An unknown error occurred";
@@ -104,17 +124,23 @@ export default function Chat() {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-6 mt-6 border border-gray-100 backdrop-blur-sm bg-opacity-95">
-      <h3 className="text-2xl font-bold mb-4 text-gray-800 flex items-center gap-2">
-        <span className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
+    <div className="relative bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl shadow-xl p-6 mt-6 border border-slate-700/50 backdrop-blur-xl hover:shadow-2xl hover:border-slate-600/50 transition-all duration-300">
+      {/* Background decorative elements */}
+      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] -z-10"></div>
+      <div className="absolute -top-24 -right-24 w-48 h-48 bg-teal-400/10 rounded-full blur-3xl"></div>
+      <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-emerald-400/10 rounded-full blur-3xl"></div>
+      <div className="absolute inset-0 bg-linear-to-tr from-transparent via-cyan-500/5 to-transparent rounded-xl"></div>
+
+      <h3 className="text-2xl font-bold mb-4 text-transparent bg-linear-to-r from-teal-300 to-emerald-300 bg-clip-text flex items-center gap-2 relative">
+        <span className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></span>
         Chat with Lalu&apos;s portfolio
       </h3>
 
       <div
         ref={chatBoxRef}
-        className="h-[500px] overflow-auto p-4 mb-4 bg-linear-to-br from-gray-50 to-white rounded-lg custom-scrollbar"
+        className="h-[500px] overflow-auto p-4 mb-4 rounded-lg custom-scrollbar relative bg-slate-900/50 backdrop-blur-sm"
         style={{
-          boxShadow: "inset 0 2px 4px 0 rgba(0, 0, 0, 0.05)",
+          boxShadow: "inset 0 2px 4px 0 rgba(0, 0, 0, 0.1)",
         }}
       >
         {messages.map((m, i) => (
@@ -123,22 +149,30 @@ export default function Chat() {
             className={`mb-4 ${m.role === "user" ? "text-right" : "text-left"}`}
           >
             <div
-              className={`inline-block max-w-[85%] p-4 rounded-2xl shadow-sm transition-all duration-200 ${m.role === "user"
-                  ? "bg-linear-to-r from-blue-500 to-blue-600 text-white"
+              className={`inline-block max-w-[85%] p-4 rounded-2xl shadow-sm transition-all duration-200 ${
+                m.role === "user"
+                  ? "bg-linear-to-r from-teal-600 to-emerald-600 text-white backdrop-blur-sm"
                   : m.role === "assistant"
-                  ? "bg-white border border-gray-100"
-                  : "bg-gray-100"
-                }`}
+                  ? "bg-slate-800/80 border border-slate-700/50 backdrop-blur-sm"
+                  : "bg-slate-800/50"
+              }`}
             >
               <div
-                className={`text-xs mb-1 ${m.role === "user" ? "text-blue-100" : "text-gray-400"}`}
+                className={`text-xs mb-1 ${
+                  m.role === "user" ? "text-emerald-200" : "text-slate-400"
+                }`}
               >
-                {m.role === "assistant" ? "AI Assistant" : m.role}
+                {m.role === "assistant" ? "Lalu's Twin" : null}
               </div>
               <div
-                className={`prose wrap-break-word ${m.role === "user" ? "text-white" : "text-gray-700"}`}
+                className={`prose wrap-break-word ${
+                  m.role === "user" ? "text-white text-left" : "text-slate-200"
+                }`}
               >
-                <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm]}
+                  components={components}
+                >
                   {m.text}
                 </ReactMarkdown>
               </div>
@@ -148,11 +182,11 @@ export default function Chat() {
 
         {loading && (
           <div className="mb-4">
-            <div className="inline-block p-4 bg-white border border-gray-100 rounded-2xl shadow-sm">
+            <div className="inline-block p-4 bg-slate-800/80 border border-slate-700/50 rounded-2xl shadow-sm backdrop-blur-sm">
               <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-100"></div>
-                <div className="w-2 h-2 bg-blue-500 rounded-full animate-bounce delay-200"></div>
+                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"></div>
+                <div className="w-2 h-2 bg-teal-400 rounded-full animate-bounce delay-100"></div>
+                <div className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce delay-200"></div>
               </div>
             </div>
           </div>
@@ -160,67 +194,71 @@ export default function Chat() {
       </div>
 
       {lastSources.length > 0 && (
-        <div className="mb-6">
-          <h4 className="text-sm font-semibold mb-2 text-gray-700">
+        <div className="mb-6 relative z-20">
+          <h4 className="text-sm font-semibold mb-2 text-emerald-200">
             Sources & References
           </h4>
           <div className="flex flex-wrap gap-2">
-            {lastSources.map((s, idx) => (
-              <span
+            {lastSources.map((source, idx) => (
+              <div
                 key={idx}
-                className="px-3 py-1.5 bg-blue-50 text-xs text-blue-600 rounded-lg hover:bg-blue-100 cursor-help transition-colors duration-200 border border-blue-100"
-                title={JSON.stringify(s.metadata, null, 2)}
+                className="bg-slate-800/80 border border-slate-700/50 rounded-lg p-2 text-sm text-slate-300"
               >
-                {s.metadata?.title || s.id}{" "}
-                {s.score ? `(${(s.score * 100).toFixed(0)}%)` : ""}
-              </span>
+                <div className="font-medium text-emerald-300 mb-1">
+                  {source.metadata?.title || `Source ${idx + 1}`}
+                  {source.score && ` (${(source.score * 100).toFixed(0)}%)`}
+                </div>
+              </div>
             ))}
           </div>
         </div>
       )}
 
-      <div>
-        <div className="flex flex-wrap gap-2 mb-4">
-          {suggestions.map((s, idx) => (
-            <button
-              key={idx}
-              className="px-4 py-2 text-sm bg-gray-50 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors duration-200 border border-gray-100 hover:border-gray-200"
-              onClick={() => postMessage(s)}
-            >
-              {s}
-            </button>
-          ))}
+      {suggestions.length > 0 && (
+        <div className="mb-4">
+          <h4 className="text-sm font-semibold mb-2 text-slate-300">
+            Suggested Questions
+          </h4>
+          <div className="flex flex-wrap gap-2">
+            {suggestions.map((s, idx) => (
+              <button
+                key={idx}
+                className="px-4 py-2 text-sm bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 rounded-lg transition-colors duration-200 border border-slate-700/50 hover:border-slate-600/50 backdrop-blur-sm"
+                onClick={() => postMessage(s)}
+              >
+                {s}
+              </button>
+            ))}
+          </div>
         </div>
+      )}
 
-        <div className="flex gap-3">
-          <input
-            className="grow px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent placeholder:text-gray-400 text-gray-700"
-            placeholder="Ask about projects, experience, tech stack..."
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") postMessage(input);
-            }}
-          />
-          <button
-            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition-colors duration-200 font-medium flex items-center gap-2 shadow-sm"
-            onClick={() => postMessage(input)}
-            disabled={loading}
+      <div className="flex gap-3">
+        <input
+          className="grow px-4 py-3 bg-slate-800/80 border border-slate-700/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-transparent placeholder:text-slate-500 text-slate-200 backdrop-blur-sm"
+          placeholder="Ask about projects, experience, tech stack..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") postMessage(input);
+          }}
+        />
+        <button
+          className="px-6 py-3 bg-linear-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-500 hover:to-emerald-500 disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-400 transition-all duration-200 font-medium flex items-center gap-2 shadow-sm backdrop-blur-sm"
+          onClick={() => postMessage(input)}
+          disabled={loading}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-            </svg>
-            Send
-          </button>
-        </div>
+            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+          </svg>
+          Send
+        </button>
       </div>
     </div>
   );
 }
-
-
