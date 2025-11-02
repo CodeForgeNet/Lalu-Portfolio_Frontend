@@ -194,7 +194,7 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
       // Optional: decide if you want verbal error feedback
       generateSpeech(`Error: ${message}`);
     } finally {
-      set({ loading: false, isProcessingVerbalQuery: false }); // Also set to false in finally
+      set({ loading: false }); // Only set loading to false here
     }
   },
 });

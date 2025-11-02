@@ -107,6 +107,7 @@ export default function Avatar() {
         // Start playback and set speaking state
         audioRef.current.play();
         setIsSpeaking(true);
+        useAvatarStore.setState({ isProcessingVerbalQuery: false }); // Set to false here
 
         // When audio finishes, reset speaking state
         audioRef.current.onended = () => {
@@ -159,7 +160,7 @@ export default function Avatar() {
           .reduce((sum, value) => sum + value, 0) / 20;
 
       // Normalize value between 0 and 1 with some scaling
-      const normalizedValue = Math.min(1, averageFrequency / 128) * 0.8;
+      const normalizedValue = Math.min(1, averageFrequency / 128) * 1.2;
 
       // Update mouth open value with some smoothing
       setMouthOpen((prev) => prev * 0.5 + normalizedValue * 0.5);
@@ -169,11 +170,9 @@ export default function Avatar() {
     }
 
     // Apply mouth open value to morph targets if they exist
-    const face = nodes.Face as THREE.SkinnedMesh;
+    const face = nodes.Wolf3D_Head as THREE.SkinnedMesh;
     if (face && face.morphTargetInfluences && face.morphTargetDictionary) {
-      console.log("Morph Target Dictionary:", face.morphTargetDictionary);
       const mouthIndex = face.morphTargetDictionary.mouthOpen || 0;
-      console.log("Mouth Index:", mouthIndex);
       face.morphTargetInfluences[mouthIndex] = mouthOpen;
     }
   });
@@ -189,3 +188,6 @@ export default function Avatar() {
     </group>
   );
 }
+
+
+  
