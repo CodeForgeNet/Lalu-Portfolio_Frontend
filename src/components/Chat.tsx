@@ -162,7 +162,11 @@ export default function Chat() {
                   m.role === "user" ? "text-emerald-200" : "text-slate-400"
                 }`}
               >
-                {m.role === "assistant" ? "Lalu's Twin" : null}
+                {m.role === "assistant"
+                  ? "Lalu's Twin"
+                  : m.role === "system"
+                  ? "System"
+                  : null}
               </div>
               <div
                 className={`prose wrap-break-word ${

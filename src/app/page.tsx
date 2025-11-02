@@ -21,7 +21,7 @@ export default function Home() {
           <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-emerald-400/10 rounded-full blur-3xl"></div>
           <div className="absolute inset-0 bg-linear-to-tr from-transparent via-cyan-500/5 to-transparent"></div>
 
-          <div className="flex items-start justify-between relative">
+          <div className="flex items-center justify-between relative">
             <div>
               <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-linear-to-r from-teal-300 to-emerald-300">
                 {resume.name}
@@ -119,13 +119,10 @@ export default function Home() {
                   </a>
                 </div>
               </div>
-              <p className="mt-4 text-slate-300 text-sm leading-relaxed max-w-prose">
-                {resume.tagline}
-              </p>
             </div>
 
             {/* Profile Picture */}
-            <div className="hidden sm:block relative w-24 h-24 rounded-full overflow-hidden shadow-lg border-2 border-slate-700/50 ring-2 ring-teal-500/20">
+            <div className="hidden sm:block relative w-36 h-36 rounded-full overflow-hidden shadow-lg border-2 border-slate-700/50 ring-2 ring-teal-500/20">
               <Image
                 src="/profile.jpg" // Placeholder image, replace with actual path
                 alt="Lalu Kumar"
