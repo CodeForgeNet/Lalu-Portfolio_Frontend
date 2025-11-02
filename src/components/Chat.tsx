@@ -1,44 +1,39 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from "react";
-import axios from "axios";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Components } from "react-markdown";
+import useAvatarStore from "@/utils/avatarStore";
 
+// Define types here or import from store if they are exported
 type Message = {
   role: "user" | "assistant" | "system";
   text: string;
   ts: number;
 };
 
-interface SourceMetadata {
-  title?: string;
-  type?: string;
-  projectId?: string;
-}
-
 type Source = {
   id: string;
   score?: number;
-  metadata?: SourceMetadata;
+  metadata?: { title?: string };
   text: string;
   title?: string;
 };
 
 export default function Chat() {
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState<Message[]>(() => [
-    {
-      role: "system",
-      text: "You are talking to Lalu Kumar's portfolio assistant.",
-      ts: Date.now(),
-    },
-  ]);
-  const [loading, setLoading] = useState(false);
-  const [lastSources, setLastSources] = useState<Source[]>([]);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
   const chatBoxRef = useRef<HTMLDivElement>(null);
+
+  // Get state and actions from the global store
+  const {
+    messages,
+    loading,
+    suggestions,
+    lastSources,
+    fetchInitialSuggestions,
+    submitQuery,
+  } = useAvatarStore();
 
   useEffect(() => {
     // Keep scroll at bottom when new messages arrive
@@ -48,73 +43,15 @@ export default function Chat() {
   }, [messages, loading]);
 
   useEffect(() => {
-    // Fetch initial suggestions when component mounts
-    const fetchInitialSuggestions = async () => {
-      try {
-        const res = await axios.post(
-          `${
-            process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"
-          }/api/suggest`,
-          {}
-        );
-        setSuggestions(res.data?.suggestions || []);
-      } catch (error) {
-        console.error("Error fetching initial suggestions:", error);
-      }
-    };
-    fetchInitialSuggestions();
-  }, []);
-
-  const postMessage = async (text: string) => {
-    if (!text.trim()) return;
-
-    const userMsg: Message = { role: "user", text, ts: Date.now() };
-    setMessages((prev) => [...prev, userMsg]);
-    setInput("");
-    setLoading(true);
-    setSuggestions([]); // Clear suggestions when a new question is asked
-
-    try {
-      setLastSources([]);
-      const res = await axios.post(
-        `${
-          process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"
-        }/api/ask`,
-        {
-          question: text,
-          topK: 3,
-        }
-      );
-
-      const assistantText = res.data?.text || "Sorry, no response.";
-      const assistantMsg: Message = {
-        role: "assistant",
-        text: assistantText,
-        ts: Date.now(),
-      };
-
-      setMessages((prev) => [...prev, assistantMsg]);
-
-      // Set sources from response
-      const sources = res.data?.sources || [];
-      setLastSources(sources);
-
-      // Set new suggestions from response
-      const suggestions = res.data?.suggestions || [];
-      setSuggestions(suggestions);
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "An unknown error occurred";
-      const errMsg: Message = {
-        role: "assistant",
-        text: `Error: ${message}`,
-        ts: Date.now(),
-      };
-
-      setMessages((prev) => [...prev, errMsg]);
-    } finally {
-      setLoading(false);
+    // Fetch initial suggestions only if there are no messages yet
+    if (messages.length <= 1) {
+      fetchInitialSuggestions();
     }
+  }, [fetchInitialSuggestions, messages.length]);
+
+  const handleSend = () => {
+    submitQuery(input);
+    setInput("");
   };
 
   const components: Components = {
@@ -133,17 +70,17 @@ export default function Chat() {
 
       <h3 className="text-2xl font-bold mb-4 text-transparent bg-linear-to-r from-teal-300 to-emerald-300 bg-clip-text flex items-center gap-2 relative">
         <span className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></span>
-        Chat with Lalu&apos;s portfolio
+        Chat with Lalu&apos;s Twin
       </h3>
 
       <div
         ref={chatBoxRef}
-        className="h-[500px] overflow-auto p-4 mb-4 rounded-lg custom-scrollbar relative bg-slate-900/50 backdrop-blur-sm"
+        className="h-[400px] overflow-auto p-4 mb-4 rounded-lg custom-scrollbar relative bg-slate-900/50 backdrop-blur-sm"
         style={{
           boxShadow: "inset 0 2px 4px 0 rgba(0, 0, 0, 0.1)",
         }}
       >
-        {messages.map((m, i) => (
+        {messages.map((m: Message, i: number) => (
           <div
             key={i}
             className={`mb-4 ${m.role === "user" ? "text-right" : "text-left"}`}
@@ -203,7 +140,7 @@ export default function Chat() {
             Sources & References
           </h4>
           <div className="flex flex-wrap gap-2">
-            {lastSources.map((source, idx) => (
+            {lastSources.map((source: Source, idx: number) => (
               <div
                 key={idx}
                 className="bg-slate-800/80 border border-slate-700/50 rounded-lg p-2 text-sm text-slate-300"
@@ -218,17 +155,17 @@ export default function Chat() {
         </div>
       )}
 
-      {suggestions.length > 0 && (
+      {suggestions.length > 0 && !loading && (
         <div className="mb-4">
           <h4 className="text-sm font-semibold mb-2 text-slate-300">
             Suggested Questions
           </h4>
           <div className="flex flex-wrap gap-2">
-            {suggestions.map((s, idx) => (
+            {suggestions.map((s: string, idx: number) => (
               <button
                 key={idx}
                 className="px-4 py-2 text-sm bg-slate-800/80 text-slate-300 hover:bg-slate-700/80 rounded-lg transition-colors duration-200 border border-slate-700/50 hover:border-slate-600/50 backdrop-blur-sm"
-                onClick={() => postMessage(s)}
+                onClick={() => submitQuery(s)}
               >
                 {s}
               </button>
@@ -244,12 +181,12 @@ export default function Chat() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter") postMessage(input);
+            if (e.key === "Enter") handleSend();
           }}
         />
         <button
-          className="px-6 py-3 bg-linear-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-500 hover:to-emerald-500 disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-400 transition-all duration-200 font-medium flex items-center gap-2 shadow-sm backdrop-blur-sm"
-          onClick={() => postMessage(input)}
+          className="px-4 py-3 bg-linear-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-500 hover:to-emerald-500 disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-400 transition-all duration-200 font-medium flex items-center gap-2 shadow-sm backdrop-blur-sm"
+          onClick={handleSend}
           disabled={loading}
         >
           <svg
@@ -260,7 +197,7 @@ export default function Chat() {
           >
             <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
           </svg>
-          Send
+          <span className="hidden lg:inline">Send</span>
         </button>
       </div>
     </div>
