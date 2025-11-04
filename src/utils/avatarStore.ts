@@ -39,6 +39,7 @@ interface AvatarStore {
   // Chat state
   messages: Message[];
   loading: boolean;
+  chatLoading: boolean;
   suggestions: string[];
   lastSources: Source[];
   setMessages: (messages: Message[]) => void;
@@ -69,6 +70,7 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
     },
   ],
   loading: false,
+  chatLoading: false,
   suggestions: [],
   lastSources: [],
 
@@ -123,7 +125,7 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
     const userMsg: Message = { role: "user", text, ts: Date.now() };
     set((state) => ({
       messages: [...state.messages, userMsg],
-      loading: true,
+      chatLoading: true,
       suggestions: [],
       lastSources: [],
     }));
@@ -162,7 +164,7 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
       };
       set((state) => ({ messages: [...state.messages, errMsg] }));
     } finally {
-      set({ loading: false });
+      set({ chatLoading: false });
     }
   },
 

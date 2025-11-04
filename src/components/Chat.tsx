@@ -28,7 +28,7 @@ export default function Chat() {
   // Get state and actions from the global store
   const {
     messages,
-    loading,
+    chatLoading,
     suggestions,
     lastSources,
     fetchInitialSuggestions,
@@ -40,7 +40,7 @@ export default function Chat() {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
-  }, [messages, loading]);
+  }, [messages, chatLoading]);
 
   useEffect(() => {
     // Fetch initial suggestions only if there are no messages yet
@@ -121,7 +121,7 @@ export default function Chat() {
           </div>
         ))}
 
-        {loading && (
+        {chatLoading && (
           <div className="mb-4">
             <div className="inline-block p-4 bg-slate-800/80 border border-slate-700/50 rounded-2xl shadow-sm backdrop-blur-sm">
               <div className="flex items-center gap-2">
@@ -155,7 +155,7 @@ export default function Chat() {
         </div>
       )}
 
-      {suggestions.length > 0 && !loading && (
+      {suggestions.length > 0 && !chatLoading && (
         <div className="mb-4">
           <h4 className="text-sm font-semibold mb-2 text-slate-300">
             Suggested Questions
@@ -174,7 +174,7 @@ export default function Chat() {
         </div>
       )}
 
-      <div className="flex gap-3">
+      <div className="flex gap-1">
         <input
           className="grow px-4 py-3 bg-slate-800/80 border border-slate-700/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-teal-500/50 focus:border-transparent placeholder:text-slate-500 text-slate-200 backdrop-blur-sm"
           placeholder="Ask about projects, experience, tech stack..."
@@ -185,9 +185,9 @@ export default function Chat() {
           }}
         />
         <button
-          className="px-4 py-3 bg-linear-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-500 hover:to-emerald-500 disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-400 transition-all duration-200 font-medium flex items-center gap-2 shadow-sm backdrop-blur-sm"
+          className="px-2 py-2 bg-linear-to-r from-teal-600 to-emerald-600 text-white rounded-lg hover:from-teal-500 hover:to-emerald-500 disabled:from-slate-700 disabled:to-slate-700 disabled:text-slate-400 transition-all duration-200 font-medium flex items-center gap-2 shadow-sm backdrop-blur-sm"
           onClick={handleSend}
-          disabled={loading}
+          disabled={chatLoading}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
