@@ -61,13 +61,7 @@ export default function Chat() {
   };
 
   return (
-    <div className="relative bg-linear-to-br from-slate-900 via-slate-800 to-slate-900 rounded-xl shadow-xl p-6 mt-6 border border-slate-700/50 backdrop-blur-xl hover:shadow-2xl hover:border-slate-600/50 transition-all duration-300">
-      {/* Background decorative elements */}
-      <div className="absolute inset-0 bg-[url('/grid.svg')] opacity-[0.03] -z-10"></div>
-      <div className="absolute -top-24 -right-24 w-48 h-48 bg-teal-400/10 rounded-full blur-3xl"></div>
-      <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-emerald-400/10 rounded-full blur-3xl"></div>
-      <div className="absolute inset-0 bg-linear-to-tr from-transparent via-cyan-500/5 to-transparent rounded-xl"></div>
-
+    <>
       <h3 className="text-2xl font-bold mb-4 text-transparent bg-linear-to-r from-teal-300 to-emerald-300 bg-clip-text flex items-center gap-2 relative">
         <span className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></span>
         Chat with Lalu&apos;s Twin
@@ -200,6 +194,6 @@ export default function Chat() {
           <span className="hidden lg:inline">Send</span>
         </button>
       </div>
-    </div>
+    </>
   );
 }
