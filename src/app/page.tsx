@@ -76,17 +76,17 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl rounded-2xl p-6 sm:p-8 h-[420px]"
+            className="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl rounded-2xl p-6 sm:p-8 h-auto lg:h-[420px]"
           >
             <div className="flex items-start justify-between relative gap-6">
               <div className="flex-1">
-                <h1 className="text-4xl sm:text-5xl font-semibold bg-clip-text text-transparent bg-linear-to-r from-green-300 to-sky-300">
+                <h1 className="text-3xl sm:text-4xl lg:text-5xl font-semibold bg-clip-text text-transparent bg-linear-to-r from-green-300 to-sky-300">
                   {resume.name}
                 </h1>
-                <div className="mt-6 space-y-4">
+                <div className="mt-6 space-y-4 text-sm sm:text-base">
                   <div className="flex items-center gap-3 text-slate-300">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-400"><rect width="20" height="14" x="2" y="6" rx="2"/><path d="M16 6V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>
-                    <span className="text-lg font-medium text-slate-200">
+                    <span className="text-base lg:text-lg font-medium text-slate-200">
                       {resume.role}
                     </span>
                   </div>
@@ -118,7 +118,7 @@ export default function Home() {
               </div>
 
               {/* Profile Picture */}
-              <div className="hidden sm:block relative w-40 h-40 rounded-full overflow-hidden shadow-xl border-2 border-white/20 ring-4 ring-green-500/30">
+              <div className="hidden sm:block relative w-32 h-32 lg:w-40 lg:h-40 rounded-full overflow-hidden shadow-xl border-2 border-white/20 ring-4 ring-green-500/30">
                 <Image
                   src="/profile.jpg"
                   alt="Lalu Kumar"
@@ -135,7 +135,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }} 
             animate={{ opacity: 1, y: 0 }} 
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl rounded-2xl flex flex-col h-[420px] animate-[float_4s_ease-in-out_infinite]"
+            className="relative bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl rounded-2xl flex flex-col h-[300px] sm:h-[350px] lg:h-[420px] animate-[float_4s_ease-in-out_infinite]"
           >
             <div className="flex-1">
               <Canvas camera={{ position: [0, 0.3, 1.6], fov: 25 }}>
@@ -148,7 +148,7 @@ export default function Home() {
               <button
                 onClick={buttonState.onClick}
                 disabled={buttonState.disabled}
-                className={`w-full px-4 sm:px-6 py-3 rounded-lg font-medium text-sm sm:text-base transition-all duration-200 ${buttonState.className}`}
+                className={`w-full px-4 sm:px-6 py-3 rounded-lg font-medium text-xs sm:text-sm md:text-base transition-all duration-200 ${buttonState.className}`}
               >
                 {buttonState.text}
               </button>

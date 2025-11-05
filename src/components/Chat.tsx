@@ -62,7 +62,7 @@ export default function Chat() {
 
   return (
     <>
-      <h3 className="text-2xl font-semibold mb-4 text-transparent bg-linear-to-r from-green-300 to-sky-300 bg-clip-text flex items-center gap-3">
+      <h3 className="text-xl md:text-2xl font-semibold mb-4 text-transparent bg-linear-to-r from-green-300 to-sky-300 bg-clip-text flex items-center gap-3">
         <span className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
         Chat with My AI Twin
       </h3>
@@ -95,7 +95,7 @@ export default function Chat() {
                   : "You"}
               </div>
               <div
-                className={`prose prose-invert prose-sm wrap-break-word text-slate-200`}
+                className={`prose prose-xs sm:prose-sm prose-invert wrap-break-word text-slate-200 text-xs sm:text-sm`}
               >
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
@@ -130,7 +130,7 @@ export default function Chat() {
             {lastSources.map((source: Source, idx: number) => (
               <div
                 key={idx}
-                className="bg-white/5 border border-white/10 rounded-lg p-2 text-sm text-slate-300"
+                className="bg-white/5 border border-white/10 rounded-lg p-2 text-xs sm:text-sm text-slate-300"
               >
                 <div className="font-medium text-green-400 mb-1">
                   {source.metadata?.title || `Source ${idx + 1}`}
@@ -151,7 +151,7 @@ export default function Chat() {
             {suggestions.map((s: string, idx: number) => (
               <button
                 key={idx}
-                className="bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm text-slate-300 cursor-pointer transition-all duration-300 hover:bg-linear-to-r hover:from-blue-500 hover:to-green-500 hover:text-white hover:scale-[1.02]"
+                className="bg-white/5 border border-white/10 rounded-full px-4 py-2 text-xs sm:text-sm text-slate-300 cursor-pointer transition-all duration-300 hover:bg-linear-to-r hover:from-blue-500 hover:to-green-500 hover:text-white hover:scale-[1.02]"
                 onClick={() => submitQuery(s)}
               >
                 {s}
@@ -163,7 +163,7 @@ export default function Chat() {
 
       <div className="flex gap-2">
         <input
-          className="grow px-4 py-3 bg-black/20 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-transparent placeholder:text-slate-500 text-slate-200"
+          className="grow px-4 py-3 bg-black/20 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-transparent placeholder:text-slate-500 text-sm sm:text-base text-slate-200"
           placeholder="Ask about projects, experience, tech stack..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
@@ -177,7 +177,7 @@ export default function Chat() {
           disabled={chatLoading}
         >
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
-          <span className="hidden lg:inline">Send</span>
+          <span className="hidden lg:inline text-sm sm:text-base">Send</span>
         </button>
       </div>
     </>
