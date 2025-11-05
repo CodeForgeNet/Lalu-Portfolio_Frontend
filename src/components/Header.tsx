@@ -3,9 +3,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useState } from 'react';
+import { Menu } from 'lucide-react';
 
 export default function Header() {
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navLinks = [
     { href: '/about', label: 'About' },
@@ -46,7 +49,38 @@ export default function Header() {
             );
           })}
         </div>
+        <div className="sm:hidden">
+          <button
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="text-white focus:outline-none"
+          >
+            <Menu size={24} />
+          </button>
+        </div>
       </nav>
+      {isMobileMenuOpen && (
+        <div className="sm:hidden bg-white/10 backdrop-blur-lg py-4">
+          <div className="container mx-auto px-4 flex flex-col items-center space-y-4">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className={`text-xl transition-colors ${
+                    isActive
+                      ? 'text-green-300'
+                      : 'text-slate-300 hover:text-green-300'
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)} // Close menu on link click
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </header>
   );
 }
