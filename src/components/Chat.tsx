@@ -79,10 +79,10 @@ export default function Chat() {
             }`}
           >
             <div
-              className={`inline-block max-w-[85%] p-4 rounded-xl transition-all duration-200 ${
+              className={`p-4 rounded-xl transition-all duration-200 ${
                 m.role === "user"
-                  ? "bg-blue-500/15 border-l-4 border-blue-500 text-white"
-                  : "bg-white/5 border-l-4 border-green-500 text-slate-300"
+                  ? "inline-block max-w-[85%] bg-blue-500/15 border-l-4 border-blue-500 text-white"
+                  : "w-full bg-white/5 border-l-4 border-green-500 text-slate-300"
               }`}
             >
               <div
