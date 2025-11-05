@@ -64,7 +64,7 @@ export default function Chat() {
     <>
       <h3 className="text-xl md:text-2xl font-semibold mb-4 text-transparent bg-linear-to-r from-green-300 to-sky-300 bg-clip-text flex items-center gap-3">
         <span className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
-        Chat with My AI Twin
+        Chat with Virtual Me
       </h3>
 
       <div
@@ -74,7 +74,9 @@ export default function Chat() {
         {messages.map((m: Message, i: number) => (
           <div
             key={i}
-            className={`mb-4 flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
+            className={`mb-4 flex ${
+              m.role === "user" ? "justify-end" : "justify-start"
+            }`}
           >
             <div
               className={`inline-block max-w-[85%] p-4 rounded-xl transition-all duration-200 ${
@@ -89,7 +91,7 @@ export default function Chat() {
                 }`}
               >
                 {m.role === "assistant"
-                  ? "Lalu's AI Twin"
+                  ? "Virtual Me"
                   : m.role === "system"
                   ? "System"
                   : "You"}
@@ -176,7 +178,14 @@ export default function Chat() {
           onClick={handleSend}
           disabled={chatLoading}
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" /></svg>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-5 w-5"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+          </svg>
           <span className="hidden lg:inline text-sm sm:text-base">Send</span>
         </button>
       </div>
