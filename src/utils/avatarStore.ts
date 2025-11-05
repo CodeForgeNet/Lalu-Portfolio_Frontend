@@ -65,7 +65,7 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
   messages: [
     {
       role: "system",
-      text: "You are talking to Lalu Kumar's Twin. Ask me anything!",
+      text: "You are talking to Virtual me. Ask me anything!",
       ts: Date.now(),
     },
   ],
@@ -94,9 +94,12 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
     }
     try {
       // Remove markdown asterisks before sending to speech handler
-      const cleanText = text.replace(/\*/g, ''); // Remove all asterisks
+      const cleanText = text.replace(/\*/g, ""); // Remove all asterisks
       const audioDataUri = await speechHandler(cleanText);
-      set({ currentAudioDataUri: audioDataUri, isProcessingVerbalQuery: false }); // Set to false here
+      set({
+        currentAudioDataUri: audioDataUri,
+        isProcessingVerbalQuery: false,
+      }); // Set to false here
       return audioDataUri;
     } catch (error) {
       console.error("Error generating speech:", error);
