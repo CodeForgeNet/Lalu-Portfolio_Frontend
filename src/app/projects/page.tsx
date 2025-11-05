@@ -10,7 +10,7 @@ export default function ProjectsPage() {
           <h1 className="text-4xl sm:text-5xl font-bold bg-clip-text text-transparent bg-linear-to-r from-green-400 to-blue-500">
             My Projects
           </h1>
-          <p className="mt-4 text-lg text-slate-400">
+          <p className="mt-4 text-base sm:text-lg text-slate-400">
             A collection of my work, from web apps to AI projects.
           </p>
         </div>
@@ -22,10 +22,10 @@ export default function ProjectsPage() {
               className="bg-white/5 rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-transform duration-300 ease-in-out flex flex-col"
             >
               <div className="p-6 grow">
-                <h3 className="text-2xl font-bold text-green-300 mb-3">
+                <h3 className="text-xl sm:text-2xl font-bold text-green-300 mb-3">
                   {project.title}
                 </h3>
-                <p className="text-slate-400 mb-4 grow">{project.summary}</p>
+                <p className="text-sm sm:text-base text-slate-400 mb-4 grow">{project.summary}</p>
                 <div className="flex flex-wrap gap-2 mb-6">
                   {project.technologies.map((tech, i) => (
                     <span
@@ -44,7 +44,7 @@ export default function ProjectsPage() {
                       href={project.links.live}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center text-blue-400 hover:text-blue-300 transition-colors"
+                      className="flex items-center text-sm sm:text-base text-blue-400 hover:text-blue-300 transition-colors"
                     >
                       <ExternalLink size={18} className="mr-1" />
                       Live
@@ -55,7 +55,7 @@ export default function ProjectsPage() {
                       href={project.links.frontend}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center text-slate-400 hover:text-slate-300 transition-colors"
+                      className="flex items-center text-sm sm:text-base text-slate-400 hover:text-slate-300 transition-colors"
                     >
                       <Github size={18} className="mr-1" />
                       Frontend
@@ -66,7 +66,7 @@ export default function ProjectsPage() {
                       href={project.links.backend}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center text-slate-400 hover:text-slate-300 transition-colors"
+                      className="flex items-center text-sm sm:text-base text-slate-400 hover:text-slate-300 transition-colors"
                     >
                       <Github size={18} className="mr-1" />
                       Backend
@@ -77,7 +77,7 @@ export default function ProjectsPage() {
                       href={project.links.code}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center text-slate-400 hover:text-slate-300 transition-colors"
+                      className="flex items-center text-sm sm:text-base text-slate-400 hover:text-slate-300 transition-colors"
                     >
                       <Github size={18} className="mr-1" />
                       Code

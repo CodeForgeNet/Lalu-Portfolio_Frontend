@@ -38,7 +38,7 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`transition-colors ${
+                className={`text-base transition-colors ${
                   isActive
                     ? 'text-green-300'
                     : 'text-slate-300 hover:text-green-300'
@@ -67,7 +67,7 @@ export default function Header() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`text-xl transition-colors ${
+                  className={`text-lg transition-colors ${
                     isActive
                       ? 'text-green-300'
                       : 'text-slate-300 hover:text-green-300'

@@ -19,7 +19,7 @@ export default function AboutPage() {
               <Briefcase className="mr-3 text-green-400" />
               Summary
             </h2>
-            <p className="text-slate-300 leading-relaxed">{resume.summary}</p>
+            <p className="text-sm sm:text-base text-slate-300 leading-relaxed">{resume.summary}</p>
           </div>
 
           <div className="mb-12">
@@ -35,14 +35,14 @@ export default function AboutPage() {
                 >
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="text-xl font-bold text-green-300">
+                      <h3 className="text-lg sm:text-xl font-bold text-green-300">
                         {edu.institution}
                       </h3>
-                      <p className="text-slate-300">{edu.degree}</p>
+                      <p className="text-sm sm:text-base text-slate-300">{edu.degree}</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-slate-400">{edu.duration}</p>
-                      <p className="text-slate-500">{edu.location}</p>
+                      <p className="text-xs sm:text-sm text-slate-400">{edu.duration}</p>
+                      <p className="text-xs sm:text-sm text-slate-500">{edu.location}</p>
                     </div>
                   </div>
                 </div>
@@ -63,16 +63,16 @@ export default function AboutPage() {
                       <Briefcase className="w-3 h-3 text-green-300" />
                     </span>
                     <div className="bg-white/5 p-6 rounded-lg shadow-lg">
-                      <h3 className="text-xl font-bold text-green-300">
+                      <h3 className="text-lg sm:text-xl font-bold text-green-300">
                         {exp.title}
                       </h3>
-                      <p className="text-slate-300 font-semibold">
+                      <p className="text-sm sm:text-base text-slate-300 font-semibold">
                         {exp.organization}
                       </p>
-                      <p className="text-sm text-slate-400 mb-3">
+                      <p className="text-xs sm:text-sm text-slate-400 mb-3">
                         {exp.duration} | {exp.location}
                       </p>
-                      <ul className="list-disc list-inside text-slate-400 space-y-1">
+                      <ul className="list-disc list-inside text-sm text-slate-400 space-y-1">
                         {exp.details.map((detail, i) => (
                           <li key={i}>{detail}</li>
                         ))}
@@ -94,10 +94,10 @@ export default function AboutPage() {
                     key={index}
                     className="bg-white/5 p-6 rounded-lg shadow-lg transform hover:scale-105 transition-transform duration-300"
                   >
-                    <h3 className="text-xl font-bold text-green-300">
+                    <h3 className="text-lg sm:text-xl font-bold text-green-300">
                       {cert.title}
                     </h3>
-                    <p className="text-slate-300 font-semibold">
+                    <p className="text-sm sm:text-base text-slate-300 font-semibold">
                       {cert.organization}
                     </p>
                     <div className="flex flex-wrap gap-2 my-3">
@@ -114,7 +114,7 @@ export default function AboutPage() {
                       href={cert.certificate_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center"
+                      className="text-sm sm:text-base text-blue-400 hover:text-blue-300 transition-colors inline-flex items-center"
                     >
                       View Certificate
                     </Link>
@@ -134,7 +134,7 @@ export default function AboutPage() {
                 {Object.entries(resume.technical_skills).map(
                   ([category, skills]) => (
                     <div key={category} className="flex-1 min-w-[200px]">
-                      <h4 className="text-xl font-semibold capitalize text-green-300 mb-3">
+                      <h4 className="text-lg sm:text-xl font-semibold capitalize text-green-300 mb-3">
                         {category.replace("_", " ")}
                       </h4>
                       <div className="flex flex-wrap gap-2">
