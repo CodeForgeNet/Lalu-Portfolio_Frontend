@@ -64,7 +64,7 @@ export default function Chat() {
     <>
       <h3 className="text-2xl font-bold mb-4 text-transparent bg-linear-to-r from-teal-300 to-emerald-300 bg-clip-text flex items-center gap-2 relative">
         <span className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></span>
-        Chat with Lalu&apos;s Twin
+        Chat with Virtual me
       </h3>
 
       <div
@@ -94,7 +94,7 @@ export default function Chat() {
                 }`}
               >
                 {m.role === "assistant"
-                  ? "Lalu's Twin"
+                  ? "Virtual me"
                   : m.role === "system"
                   ? "System"
                   : null}
