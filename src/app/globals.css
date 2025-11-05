@@ -20,10 +20,23 @@
 }
 
 body {
-  background: var(--background);
+  background: linear-gradient(135deg, #0f172a, #1e293b, #0f172a);
+  background-size: 200% 200%;
+  animation: gradientShift 10s ease infinite;
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
+
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
 
 ul {
   list-style-type: disc;
