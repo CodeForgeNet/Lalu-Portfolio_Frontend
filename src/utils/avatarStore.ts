@@ -112,6 +112,10 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
 
   fetchInitialSuggestions: async () => {
     try {
+      console.log(
+        "API Key being sent:",
+        process.env.NEXT_PUBLIC_API_SECRET_KEY
+      );
       const res = await axios.post(
         `${
           process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"
