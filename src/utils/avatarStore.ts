@@ -114,7 +114,12 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
         `${
           process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"
         }/api/suggest`,
-        {}
+        {},
+        {
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_SECRET_KEY,
+          },
+        }
       );
       set({ suggestions: res.data?.suggestions || [] });
     } catch (error) {
@@ -141,6 +146,11 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
         {
           question: text,
           topK: 3,
+        },
+        {
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_SECRET_KEY,
+          },
         }
       );
 
@@ -185,6 +195,11 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
         {
           question: text,
           topK: 3,
+        },
+        {
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_SECRET_KEY,
+          },
         }
       );
 

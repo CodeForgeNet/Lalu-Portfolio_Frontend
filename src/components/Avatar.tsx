@@ -56,6 +56,11 @@ export default function Avatar() {
         {
           text,
           // VoiceRSS parameters can be customized here or left to backend defaults
+        },
+        {
+          headers: {
+            'x-api-key': process.env.NEXT_PUBLIC_API_SECRET_KEY,
+          },
         }
       );
 
