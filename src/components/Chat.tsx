@@ -33,6 +33,7 @@ export default function Chat() {
     lastSources,
     fetchInitialSuggestions,
     submitQuery,
+    isQuotaExceeded,
   } = useAvatarStore();
 
   useEffect(() => {
@@ -153,8 +154,9 @@ export default function Chat() {
             {suggestions.map((s: string, idx: number) => (
               <button
                 key={idx}
-                className="bg-white/5 border border-white/10 rounded-full px-4 py-2 text-xs sm:text-sm text-slate-300 cursor-pointer transition-all duration-300 hover:bg-linear-to-r hover:from-blue-500 hover:to-green-500 hover:text-white hover:scale-[1.02]"
+                className="bg-white/5 border border-white/10 rounded-full px-4 py-2 text-xs sm:text-sm text-slate-300 cursor-pointer transition-all duration-300 hover:bg-linear-to-r hover:from-blue-500 hover:to-green-500 hover:text-white hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => submitQuery(s)}
+                disabled={isQuotaExceeded}
               >
                 {s}
               </button>
@@ -163,32 +165,38 @@ export default function Chat() {
         </div>
       )}
 
-      <div className="flex gap-2">
-        <input
-          className="grow px-4 py-3 bg-black/20 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-transparent placeholder:text-slate-500 text-sm sm:text-base text-slate-200"
-          placeholder="Ask about projects, experience, tech stack..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") handleSend();
-          }}
-        />
-        <button
-          className="px-4 py-2 bg-linear-to-r from-green-500 to-blue-500 text-white rounded-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold flex items-center gap-2 shadow-lg hover:shadow-blue-500/50"
-          onClick={handleSend}
-          disabled={chatLoading}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5"
-            viewBox="0 0 20 20"
-            fill="currentColor"
+      {isQuotaExceeded ? (
+        <div className="text-center p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-300">
+          The daily API quota has been reached. Please try again tomorrow.
+        </div>
+      ) : (
+        <div className="flex gap-2">
+          <input
+            className="grow px-4 py-3 bg-black/20 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-transparent placeholder:text-slate-500 text-sm sm:text-base text-slate-200"
+            placeholder="Ask about projects, experience, tech stack..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleSend();
+            }}
+          />
+          <button
+            className="px-4 py-2 bg-linear-to-r from-green-500 to-blue-500 text-white rounded-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold flex items-center gap-2 shadow-lg hover:shadow-blue-500/50"
+            onClick={handleSend}
+            disabled={chatLoading || isQuotaExceeded}
           >
-            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-          </svg>
-          <span className="hidden lg:inline text-sm sm:text-base">Send</span>
-        </button>
-      </div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+            </svg>
+            <span className="hidden lg:inline text-sm sm:text-base">Send</span>
+          </button>
+        </div>
+      )}
     </>
   );
 }

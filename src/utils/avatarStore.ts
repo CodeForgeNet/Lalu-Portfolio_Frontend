@@ -43,6 +43,7 @@ interface AvatarStore {
   suggestions: string[];
   lastSources: Source[];
   setMessages: (messages: Message[]) => void;
+  isQuotaExceeded: boolean; // New state for quota
 
   // Voice input state
   isListening: boolean;
@@ -73,6 +74,7 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
   chatLoading: false,
   suggestions: [],
   lastSources: [],
+  isQuotaExceeded: false, // Initialize new state
 
   // --- Mutators ---
   setIsSpeaking: (speaking) => set({ isSpeaking: speaking }),
@@ -167,15 +169,25 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
         lastSources: res.data?.sources || [],
         suggestions: res.data?.suggestions || [],
       }));
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "An unknown error occurred";
-      const errMsg: Message = {
-        role: "assistant",
-        text: `Error: ${message}`,
-        ts: Date.now(),
-      };
-      set((state) => ({ messages: [...state.messages, errMsg] }));
+    } catch (err: any) {
+      if (err.response && err.response.data.error === "QUOTA_EXCEEDED") {
+        set({ isQuotaExceeded: true });
+        const errMsg: Message = {
+          role: "assistant",
+          text: "The daily API quota has been reached. Please try again tomorrow.",
+          ts: Date.now(),
+        };
+        set((state) => ({ messages: [...state.messages, errMsg] }));
+      } else {
+        const message =
+          err instanceof Error ? err.message : "An unknown error occurred";
+        const errMsg: Message = {
+          role: "assistant",
+          text: `Error: ${message}`,
+          ts: Date.now(),
+        };
+        set((state) => ({ messages: [...state.messages, errMsg] }));
+      }
     } finally {
       set({ chatLoading: false });
     }
@@ -208,11 +220,16 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
 
       // Trigger TTS for the response
       generateSpeech(assistantText);
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "An unknown error occurred";
-      // Optional: decide if you want verbal error feedback
-      generateSpeech(`Error: ${message}`);
+    } catch (err: any) {
+      if (err.response && err.response.data.error === "QUOTA_EXCEEDED") {
+        set({ isQuotaExceeded: true });
+        generateSpeech("The daily API quota has been reached.");
+      } else {
+        const message =
+          err instanceof Error ? err.message : "An unknown error occurred";
+        // Optional: decide if you want verbal error feedback
+        generateSpeech(`Error: ${message}`);
+      }
     } finally {
       set({ loading: false }); // Only set loading to false here
     }
