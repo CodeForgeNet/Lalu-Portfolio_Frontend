@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { StateCreator } from "zustand";
 
 // Types from Chat.tsx
@@ -56,6 +56,11 @@ interface AvatarStore {
   submitVerbalQuery: (text: string) => Promise<void>;
 }
 
+// Type guard to check if an error is an AxiosError
+function isAxiosError(error: unknown): error is AxiosError {
+  return (error as AxiosError).isAxiosError !== undefined;
+}
+
 const store: StateCreator<AvatarStore> = (set, get) => ({
   // --- Initial State ---
   isSpeaking: false,
@@ -103,7 +108,8 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
         isProcessingVerbalQuery: false,
       }); // Set to false here
       return audioDataUri;
-    } catch (error) {
+    } catch (error: unknown) {
+      // Changed to unknown
       console.error("Error generating speech:", error);
       set({ isProcessingVerbalQuery: false }); // Also set to false on error
       return null;
@@ -112,10 +118,6 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
 
   fetchInitialSuggestions: async () => {
     try {
-      console.log(
-        "API Key being sent:",
-        process.env.NEXT_PUBLIC_API_SECRET_KEY
-      );
       const res = await axios.post(
         `${
           process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"
@@ -123,13 +125,21 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
         {},
         {
           headers: {
-            'x-api-key': process.env.NEXT_PUBLIC_API_SECRET_KEY,
+            "x-api-key": process.env.NEXT_PUBLIC_API_SECRET_KEY,
           },
         }
       );
       set({ suggestions: res.data?.suggestions || [] });
-    } catch (error) {
+    } catch (error: unknown) {
+      // Changed to unknown
       console.error("Error fetching initial suggestions:", error);
+      // Add logic to handle quota exceeded for initial suggestions
+      if (isAxiosError(error) && error.response) {
+        const data = error.response.data as { error?: string } | undefined;
+        if (data?.error === "QUOTA_EXCEEDED") {
+          set({ isQuotaExceeded: true });
+        }
+      }
     }
   },
 
@@ -155,7 +165,7 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
         },
         {
           headers: {
-            'x-api-key': process.env.NEXT_PUBLIC_API_SECRET_KEY,
+            "x-api-key": process.env.NEXT_PUBLIC_API_SECRET_KEY,
           },
         }
       );
@@ -173,18 +183,33 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
         lastSources: res.data?.sources || [],
         suggestions: res.data?.suggestions || [],
       }));
-    } catch (err: any) {
-      if (err.response && err.response.data.error === "QUOTA_EXCEEDED") {
-        set({ isQuotaExceeded: true });
-        const errMsg: Message = {
-          role: "assistant",
-          text: "The daily API quota has been reached. Please try again tomorrow.",
-          ts: Date.now(),
-        };
-        set((state) => ({ messages: [...state.messages, errMsg] }));
+    } catch (err: unknown) {
+      // Changed to unknown
+      if (isAxiosError(err) && err.response) {
+        const data = err.response.data as { error?: string } | undefined;
+        if (data?.error === "QUOTA_EXCEEDED") {
+          set({ isQuotaExceeded: true });
+          const errMsg: Message = {
+            role: "assistant",
+            text: "The daily API quota has been reached. Please try again tomorrow.",
+            ts: Date.now(),
+          };
+          set((state) => ({ messages: [...state.messages, errMsg] }));
+        } else {
+          const message = isAxiosError(err)
+            ? err.message
+            : "An unknown error occurred";
+          const errMsg: Message = {
+            role: "assistant",
+            text: `Error: ${message}`,
+            ts: Date.now(),
+          };
+          set((state) => ({ messages: [...state.messages, errMsg] }));
+        }
       } else {
-        const message =
-          err instanceof Error ? err.message : "An unknown error occurred";
+        const message = isAxiosError(err)
+          ? err.message
+          : "An unknown error occurred";
         const errMsg: Message = {
           role: "assistant",
           text: `Error: ${message}`,
@@ -214,7 +239,7 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
         },
         {
           headers: {
-            'x-api-key': process.env.NEXT_PUBLIC_API_SECRET_KEY,
+            "x-api-key": process.env.NEXT_PUBLIC_API_SECRET_KEY,
           },
         }
       );
@@ -224,14 +249,24 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
 
       // Trigger TTS for the response
       generateSpeech(assistantText);
-    } catch (err: any) {
-      if (err.response && err.response.data.error === "QUOTA_EXCEEDED") {
-        set({ isQuotaExceeded: true });
-        generateSpeech("The daily API quota has been reached.");
+    } catch (err: unknown) {
+      // Changed to unknown
+      if (isAxiosError(err) && err.response) {
+        const data = err.response.data as { error?: string } | undefined;
+        if (data?.error === "QUOTA_EXCEEDED") {
+          set({ isQuotaExceeded: true });
+          generateSpeech("The daily API quota has been reached.");
+        } else {
+          const message = isAxiosError(err)
+            ? err.message
+            : "An unknown error occurred";
+          // Optional: decide if you want verbal error feedback
+          generateSpeech(`Error: ${message}`);
+        }
       } else {
-        const message =
-          err instanceof Error ? err.message : "An unknown error occurred";
-        // Optional: decide if you want verbal error feedback
+        const message = isAxiosError(err)
+          ? err.message
+          : "An unknown error occurred";
         generateSpeech(`Error: ${message}`);
       }
     } finally {
