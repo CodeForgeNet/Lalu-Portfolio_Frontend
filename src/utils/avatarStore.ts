@@ -25,6 +25,12 @@ type Source = {
 
 type SpeechHandler = ((text: string) => Promise<string>) | null;
 
+// Interface for expected backend error response
+interface BackendErrorResponse {
+  error?: string;
+  message?: string;
+}
+
 interface AvatarStore {
   // Avatar speech state
   isSpeaking: boolean;
@@ -139,15 +145,24 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
         suggestions: res.data?.suggestions || [],
         suggestionSource: res.data?.source || null,
       });
-    } catch (error: unknown) {
-      // Changed to unknown
+    } catch (error: unknown) { // Changed to unknown
       console.error("Error fetching initial suggestions:", error);
-      // Add logic to handle quota exceeded for initial suggestions
-      if (isAxiosError(error) && error.response) {
-        const data = error.response.data as { error?: string } | undefined;
-        if (data?.error === "QUOTA_EXCEEDED") {
+      if (isAxiosError(error)) {
+        if (
+          error.response &&
+          (error.response.data as BackendErrorResponse)?.error === "QUOTA_EXCEEDED"
+        ) {
           set({ isQuotaExceeded: true });
         }
+        // Display the detailed error message in the chat
+        const errMsg: Message = {
+          role: "system",
+          text: `Error fetching initial suggestions: ${
+            (error.response?.data as BackendErrorResponse)?.error || error.message
+          }`,
+          ts: Date.now(),
+        };
+        set((state) => ({ messages: [...state.messages, errMsg] }));
       }
     }
   },
@@ -195,7 +210,7 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
     } catch (err: unknown) {
       // Changed to unknown
       if (isAxiosError(err) && err.response) {
-        const data = err.response.data as { error?: string } | undefined;
+        const data = err.response.data as BackendErrorResponse | undefined;
         if (data?.error === "QUOTA_EXCEEDED") {
           set({ isQuotaExceeded: true });
           const errMsg: Message = {
@@ -261,7 +276,7 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
     } catch (err: unknown) {
       // Changed to unknown
       if (isAxiosError(err) && err.response) {
-        const data = err.response.data as { error?: string } | undefined;
+        const data = err.response.data as BackendErrorResponse | undefined;
         if (data?.error === "QUOTA_EXCEEDED") {
           set({ isQuotaExceeded: true });
           generateSpeech("The daily API quota has been reached.");
