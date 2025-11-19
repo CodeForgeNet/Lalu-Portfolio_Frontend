@@ -140,7 +140,7 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
           },
         }
       );
-      console.info("Initial suggestions response:", res.data);
+
       set({
         suggestions: res.data?.suggestions || [],
         suggestionSource: res.data?.source || null,
