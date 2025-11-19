@@ -157,12 +157,18 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
           set({ isQuotaExceeded: true });
         }
         // Display the detailed error message in the chat
+        let errorMessageText = `Error fetching initial suggestions: ${
+          (error.response?.data as BackendErrorResponse)?.error ||
+          error.message
+        }`;
+
+        if (error.response?.status === 503) {
+          errorMessageText = "Error fetching initial suggestions: The AI model is currently overloaded. Please try again later.";
+        }
+
         const errMsg: Message = {
           role: "system",
-          text: `Error fetching initial suggestions: ${
-            (error.response?.data as BackendErrorResponse)?.error ||
-            error.message
-          }`,
+          text: errorMessageText,
           ts: Date.now(),
         };
         set((state) => ({ messages: [...state.messages, errMsg] }));
