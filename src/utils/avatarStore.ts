@@ -122,7 +122,7 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
     } catch (error: unknown) {
       // Changed to unknown
       console.error("Error generating speech:", error);
-      set({ isProcessingVerbalQuery: false }); // Also set to false on error
+      set({ isProcessingVerbalQuery: false });
       return null;
     }
   },
@@ -145,12 +145,14 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
         suggestions: res.data?.suggestions || [],
         suggestionSource: res.data?.source || null,
       });
-    } catch (error: unknown) { // Changed to unknown
+    } catch (error: unknown) {
+      // Changed to unknown
       console.error("Error fetching initial suggestions:", error);
       if (isAxiosError(error)) {
         if (
           error.response &&
-          (error.response.data as BackendErrorResponse)?.error === "QUOTA_EXCEEDED"
+          (error.response.data as BackendErrorResponse)?.error ===
+            "QUOTA_EXCEEDED"
         ) {
           set({ isQuotaExceeded: true });
         }
@@ -158,7 +160,8 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
         const errMsg: Message = {
           role: "system",
           text: `Error fetching initial suggestions: ${
-            (error.response?.data as BackendErrorResponse)?.error || error.message
+            (error.response?.data as BackendErrorResponse)?.error ||
+            error.message
           }`,
           ts: Date.now(),
         };
