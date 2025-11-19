@@ -30,6 +30,7 @@ export default function Chat() {
     messages,
     chatLoading,
     suggestions,
+    suggestionSource,
     lastSources,
     fetchInitialSuggestions,
     submitQuery,
@@ -147,8 +148,13 @@ export default function Chat() {
 
       {suggestions.length > 0 && !chatLoading && (
         <div className="mb-4">
-          <h4 className="text-sm font-semibold mb-2 text-slate-300">
-            Suggested Questions
+          <h4 className="text-sm font-semibold mb-2 text-slate-300 flex items-center gap-2">
+            <span>Suggested Questions</span>
+            {suggestionSource && (
+              <span className="text-xs text-slate-400 italic">
+                ({suggestionSource})
+              </span>
+            )}
           </h4>
           <div className="flex flex-wrap gap-2">
             {suggestions.map((s: string, idx: number) => (

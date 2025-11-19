@@ -41,6 +41,7 @@ interface AvatarStore {
   loading: boolean;
   chatLoading: boolean;
   suggestions: string[];
+  suggestionSource: string | null;
   lastSources: Source[];
   setMessages: (messages: Message[]) => void;
   isQuotaExceeded: boolean; // New state for quota
@@ -52,6 +53,7 @@ interface AvatarStore {
 
   // Functions
   fetchInitialSuggestions: () => Promise<void>;
+  setSuggestionSource: (src: string | null) => void;
   submitQuery: (text: string) => Promise<void>;
   submitVerbalQuery: (text: string) => Promise<void>;
 }
@@ -78,6 +80,7 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
   loading: false,
   chatLoading: false,
   suggestions: [],
+  suggestionSource: null,
   lastSources: [],
   isQuotaExceeded: false, // Initialize new state
 
@@ -87,6 +90,8 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
   setCurrentAudioDataUri: (uri) => set({ currentAudioDataUri: uri }),
   setSpeechHandler: (handler) => set({ speechHandler: handler }),
   setMessages: (messages) => set({ messages }),
+  // optional: set suggestion source
+  setSuggestionSource: (src: string | null) => set({ suggestionSource: src }),
 
   stopSpeaking: () => {
     set({ isSpeaking: false, currentAudioDataUri: null });
@@ -129,7 +134,11 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
           },
         }
       );
-      set({ suggestions: res.data?.suggestions || [] });
+      console.info("Initial suggestions response:", res.data);
+      set({
+        suggestions: res.data?.suggestions || [],
+        suggestionSource: res.data?.source || null,
+      });
     } catch (error: unknown) {
       // Changed to unknown
       console.error("Error fetching initial suggestions:", error);
