@@ -25,26 +25,62 @@ This is the frontend for the AI-powered portfolio, built with Next.js, React, an
 ```
 apps/frontend/
 ├── src/
-│   ├── app/                # Next.js App Router: main page and layout
-│   │   ├── page.tsx
-│   │   └── layout.tsx
+│   ├── app/                # Next.js App Router
+│   │   ├── page.tsx        # Main entry point, handles layout and "Ask Verbally" logic
+│   │   └── layout.tsx      # Global layout wrapper
 │   ├── components/         # Reusable React components
 │   │   ├── Avatar.tsx      # 3D avatar model, animation, and lip-sync logic
 │   │   ├── AvatarScene.tsx # Canvas setup for the 3D avatar
-│   │   └── Chat.tsx        # The main chat interface component
+│   │   └── Chat.tsx        # Main chat interface, handles message history and suggestions
 │   ├── data/
 │   │   └── resume.json     # Local copy of resume data for display
 │   └── utils/
-│       ├── avatarStore.ts  # Zustand store for global state management
-│       └── useSpeechRecognition.ts # Hook for browser-based speech recognition
+│       ├── avatarStore.ts  # Global Zustand store for chat and avatar state
+│       └── useSpeechRecognition.ts # Custom hook for browser Speech Recognition API
 ├── public/
 │   ├── models/avatar.glb   # The 3D model for the avatar
-│   └── ...                 # Other static assets like images and SVGs
-├── .env.local.example      # Example for local environment variables
+│   └── ...                 # Static assets
+├── .env.local.example      # Example environment variables
 ├── next.config.ts          # Next.js configuration
 ├── package.json            # Project dependencies and scripts
 └── tailwind.config.ts      # Tailwind CSS configuration
 ```
+
+## Key Components & State Management
+
+### State Management (Zustand)
+
+The application uses **Zustand** for global state management, centralized in `src/utils/avatarStore.ts`.
+
+- **`useAvatarStore`**: Handles the core application state:
+  - **Chat State**: Stores message history (`messages`), loading states (`chatLoading`), and suggestions.
+  - **Avatar State**: Controls speaking status (`isSpeaking`), audio data (`currentAudioDataUri`), and lip-sync synchronization.
+  - **Speech State**: Manages verbal query processing (`isProcessingVerbalQuery`).
+  - **API Integration**: Contains actions to fetch suggestions (`fetchInitialSuggestions`) and submit queries (`submitQuery`, `submitVerbalQuery`).
+
+### Key Components
+
+- **`Avatar.tsx`**:
+  - Renders the 3D Ready Player Me avatar.
+  - Manages facial morph targets (visemes) for lip-syncing based on audio input.
+  - Handles idle and talking animations.
+
+- **`Chat.tsx`**:
+  - Displays the conversation history with markdown support.
+  - Renders suggested questions and source citations.
+  - Handles text input and submission.
+
+- **`page.tsx`**:
+  - The main landing page that composes the UI.
+  - Orchestrates the "Ask Verbally" feature using `useSpeechRecognition`.
+  - Manages the dynamic state of the main action button (Listening, Processing, Stop Replying).
+
+### Hooks
+
+- **`useSpeechRecognition.ts`**:
+  - A custom hook that wraps the browser's native `SpeechRecognition` API.
+  - Provides `startListening`, `stopListening`, and the current `transcript`.
+  - Handles browser compatibility checks.
 
 ## Getting Started
 
@@ -73,6 +109,7 @@ If your backend is running locally on port 8080, the file should contain:
 
 ```
 NEXT_PUBLIC_API_BASE=http://localhost:8080
+NEXT_PUBLIC_API_SECRET_KEY=... # Optional: If you have API protection enabled
 ```
 
 If your backend is deployed, replace the URL with your production API endpoint.
