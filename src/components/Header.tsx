@@ -1,83 +1,111 @@
 "use client";
 
-import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
-import { Menu } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Menu, X } from 'lucide-react';
 
 export default function Header() {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 80);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navLinks = [
+    { href: '/projects', label: 'Work' },
     { href: '/about', label: 'About' },
-    { href: '/projects', label: 'Projects' },
-    { href: '/growth', label: 'Growth' },
+    { href: '/lab', label: 'Lab' },
+    { href: 'mailto:connect.lalukumar@gmail.com', label: 'Contact', external: true },
   ];
 
   return (
-    <header className="bg-white/10 backdrop-blur-lg border-b border-white/20 shadow-lg sticky top-0 z-50">
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+    <header className={`sticky top-0 z-50 bg-bg/80 backdrop-blur-md transition-colors duration-300 ${scrolled ? 'border-b border-border' : ''}`}>
+      <nav className="max-w-[1200px] mx-auto px-6 md:px-12 flex items-center justify-between h-16">
         <div className="flex items-center">
-          <Link href="/">
-            <div className="relative w-10 h-10 rounded-full overflow-hidden border-2 border-white/20">
-              <Image
-                src="/profile.jpg"
-                alt="Lalu Kumar"
-                fill
-                style={{ objectFit: 'cover' }}
-              />
-            </div>
+          <Link href="/" className="group flex items-center gap-2">
+            <span className="font-mono font-medium text-text group-hover:text-accent transition-colors">LK·</span>
           </Link>
         </div>
-        <div className="hidden sm:flex items-center space-x-8">
+        
+        <div className="hidden md:flex items-center space-x-8">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
               <Link
-                key={link.href}
+                key={link.label}
                 href={link.href}
-                className={`text-base transition-colors ${
+                target={link.external ? "_blank" : "_self"}
+                rel={link.external ? "noopener noreferrer" : ""}
+                className={`text-sm font-medium transition-colors ${
                   isActive
-                    ? 'text-green-300'
-                    : 'text-slate-300 hover:text-green-300'
+                    ? 'text-accent'
+                    : 'text-text-muted hover:text-text'
                 }`}
               >
                 {link.label}
               </Link>
             );
           })}
+          
+          <a 
+            href="/docs/Lalu_FullStack-AI-Resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-mono text-accent border border-accent/30 rounded px-4 py-2 hover:bg-accent/10 transition-colors"
+          >
+            Download CV ↓
+          </a>
         </div>
-        <div className="sm:hidden">
+
+        <div className="md:hidden">
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="text-white focus:outline-none"
+            className="text-text hover:text-accent transition-colors"
           >
-            <Menu size={24} />
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </nav>
+
+      {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
-        <div className="sm:hidden bg-white/10 backdrop-blur-lg py-4">
-          <div className="container mx-auto px-4 flex flex-col items-center space-y-4">
+        <div className="md:hidden absolute top-16 left-0 right-0 bg-surface border-b border-border shadow-2xl">
+          <div className="flex flex-col px-6 py-6 space-y-6">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
                 <Link
-                  key={link.href}
+                  key={link.label}
                   href={link.href}
-                  className={`text-lg transition-colors ${
+                  target={link.external ? "_blank" : "_self"}
+                  rel={link.external ? "noopener noreferrer" : ""}
+                  className={`text-lg font-medium transition-colors ${
                     isActive
-                      ? 'text-green-300'
-                      : 'text-slate-300 hover:text-green-300'
+                      ? 'text-accent'
+                      : 'text-text-muted hover:text-text'
                   }`}
-                  onClick={() => setIsMobileMenuOpen(false)} // Close menu on link click
+                  onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {link.label}
                 </Link>
               );
             })}
+            <a 
+              href="/docs/Lalu_FullStack-AI-Resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-center font-mono text-accent border border-accent/30 rounded px-4 py-3 hover:bg-accent/10 transition-colors"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Download CV ↓
+            </a>
           </div>
         </div>
       )}

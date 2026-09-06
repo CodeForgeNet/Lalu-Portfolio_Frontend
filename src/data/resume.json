@@ -1,12 +1,15 @@
 {
   "name": "Lalu Kumar",
-  "role": "Full Stack Developer",
-  "tagline": "Passionate Full Stack Developer building scalable, AI-driven web applications.",
+  "role": "AI Systems & Full Stack Engineer",
+  "tagline": "Building production RAG pipelines, multi-agent systems, and AI voice infrastructure.",
+  "location": "Mohali, PB, India",
+  "open_to_relocation": true,
   "email": "connect.lalukumar@gmail.com",
   "phone": "+91 8789485074",
   "github": "https://github.com/CodeForgeNet",
   "linkedin": "https://www.linkedin.com/in/lalu-kumar/",
-  "summary": "Full Stack Developer with 1 year of experience, skilled in Java, Spring Boot, React, and Node.js. Focused on building scalable, AI-driven, and data-intensive web applications. Experienced in frontend and backend development, RESTful API design, cloud deployment, and version control.",
+  "portfolio": "https://lalu-portfolio.vercel.app/",
+  "summary": "Full Stack & AI Engineer with production RAG pipelines, multi-agent systems, and AI voice infrastructure. Merged PRs into OpenClaw (330k stars) and Anthropic's MCP servers; shipped TunePrompt (800+ npm installs) and Genesis Forge (700+ downloads).",
   "personal_details": {
     "hobbies": [
       "Watching anime",
@@ -16,110 +19,164 @@
     "motivation": "Driven by curiosity and a love for problem-solving, constantly seeking to expand knowledge and improve through continuous learning.",
     "fun_fact": "If something can be automated, I'll probably find a way to do it."
   },
+  "open_source": [
+    {
+      "project": "OpenClaw",
+      "stars": "330k",
+      "pr_number": "PR #52513",
+      "pr_url": "https://github.com/OpenClaw/OpenClaw/pull/52513",
+      "description": "Fixed critical gateway auth regression — async SecretRef pattern eliminated synchronous blocking across 5 command paths, restoring service for 1M+ weekly active users.",
+      "impact": "Restored 1M+ WAU service; closed 5 related issues"
+    },
+    {
+      "project": "OpenClaw",
+      "stars": "330k",
+      "pr_number": "PR #65354",
+      "pr_url": "https://github.com/OpenClaw/OpenClaw/pull/65354",
+      "description": "Fixed idempotency key propagation in subagent gateway — prevented duplicate webhook processing in distributed agentic workflows.",
+      "impact": "Eliminated request duplication critical for financial workflows"
+    },
+    {
+      "project": "Hermes Agent",
+      "stars": "227k",
+      "pr_number": "PR #60883",
+      "pr_url": "https://github.com/HermesAgent/HermesAgent/pull/60883",
+      "description": "Optimized session message pagination — fixed unbounded state blob growth from missing cleanup on session boundaries.",
+      "impact": "40% reduction in per-interaction token consumption (applied in Genesis Forge)"
+    }
+  ],
   "education": [
     {
       "institution": "Indira Gandhi National Open University (IGNOU)",
       "degree": "Master of Computer Applications (MCA)",
       "location": "Delhi, India",
-      "duration": "Jan 2024 – Present"
+      "duration": "Jan 2024 – Dec 2025"
     },
     {
       "institution": "Maulana Mazharul Haque Arabic and Persian University",
       "degree": "Bachelor of Computer Applications (BCA)",
       "location": "Patna, Bihar, India",
-      "duration": "2019 – 2022"
+      "duration": "2019 – Jan 2023"
     }
   ],
   "technical_skills": {
-    "languages": ["Java", "Python", "JavaScript", "SQL", "HTML", "CSS"],
-    "frontend": [
-      "React.js",
-      "Next.js",
-      "Bootstrap",
-      "Tailwind CSS",
-      "HTML5",
-      "CSS3"
-    ],
-    "backend": [
-      "Spring Boot",
-      "NestJS",
-      "Node.js",
-      "Express.js",
-      "Servlets",
-      "JSP",
-      "RESTful APIs",
-      "JPA",
-      "Hibernate",
-      "Spring Security",
-      "Microservices"
-    ],
-    "databases": ["MySQL", "Oracle SQL", "MongoDB"],
-    "data_science_ai": [
-      "Python (NumPy, Pandas)",
-      "TensorFlow.js",
-      "LangChain",
-      "FAISS",
-      "Matplotlib",
-      "Jupyter Notebook"
-    ],
-    "devops_tools": [
-      "Git",
-      "GitHub",
-      "Docker",
-      "AWS",
-      "GitHub Actions",
-      "Vercel",
-      "Cloudinary",
-      "Postman",
-      "VS Code",
-      "Eclipse",
-      "IntelliJ IDEA"
-    ],
-    "concepts": [
-      "OOP",
-      "DBMS",
-      "MVC Architecture",
-      "RESTful Architecture",
-      "CI/CD",
-      "IMAP",
-      "SMTP",
-      "Email Header Analysis"
-    ]
+    "ai_llm": ["LangChain", "LangGraph", "RAG Pipelines", "Semantic Chunking", "Prompt Evaluation", "LLM Cost Optimization", "Agentic Systems", "Multi-Agent Orchestration", "Anthropic MCP", "Fine-tuning (LoRA/QLoRA)"],
+    "embeddings_vector": ["OpenAI Embeddings", "Gemini Embeddings", "Sentence Transformers", "Pinecone", "pgvector"],
+    "ai_frameworks": ["OpenAI API", "Anthropic API", "Gemini API", "Groq", "HuggingFace Transformers"],
+    "languages": ["TypeScript", "Python", "Java", "JavaScript"],
+    "backend": ["Node.js", "NestJS", "Spring Boot", "FastAPI", "Microservices", "REST APIs", "WebSockets", "Socket.io"],
+    "frontend": ["Next.js 15", "React 19", "Tailwind CSS 4", "Framer Motion", "Redux Toolkit", "Zustand"],
+    "cloud_devops": ["AWS Lambda", "AWS S3", "AWS EC2", "Google Cloud Run", "Docker", "GitHub Actions CI/CD", "Supabase"],
+    "databases": ["PostgreSQL", "MongoDB", "Redis (Upstash)", "MySQL"],
+    "testing_eval": ["Postman", "LLM output evaluation", "ROUGE", "Semantic similarity scoring"]
   },
   "experience": [
     {
-      "title": "Full Stack Java Trainee Intern",
-      "organization": "QSpiders Training and Development Center",
-      "location": "Noida, India",
-      "duration": "Oct 2024 – May 2025",
+      "title": "Full Stack & AI Engineer",
+      "organization": "Girl Power Talk",
+      "location": "Mohali, India · On-site",
+      "duration": "Apr 2026 – Present",
+      "type": "full-time",
       "details": [
-        "Trained in Full Stack Java Development focusing on Spring Boot, JPA, and Hibernate.",
-        "Built REST APIs using Spring Boot and integrated MySQL/Oracle via JPA.",
-        "Developed web apps using JSP, Servlets, and React; implemented session-based secure CRUD operations.",
-        "Worked with Git, Postman, Eclipse, and IntelliJ IDEA following professional version control workflows."
-      ]
+        "Built Expert Witness Tool Legal AI SaaS (React, Node.js, Express): hybrid RAG pipeline (HyDE + BM25 + Pinecone + RRF + Cohere rerank-v3.5) with parent-child chunking achieving 98.5% retrieval precision and 10x faster response vs. prior n8n workflow.",
+        "Reduced per-case AI processing cost by 125x ($2.00 → $0.016) via async BullMQ + Redis job queuing, SHA-256 file deduplication, and multi-layer caching, eliminating redundant re-embedding on unchanged documents."
+      ],
+      "metrics": ["98.5% retrieval precision", "10x faster response", "125x cost reduction ($2.00 → $0.016)"]
+    },
+    {
+      "title": "Full Stack & AI Engineer",
+      "organization": "HomeInTown",
+      "location": "Remote",
+      "duration": "Jan 2025 – Mar 2026",
+      "type": "full-time",
+      "details": [
+        "Engineered a lead filtration engine and multi-tenant auth system (MPIN, JWT, MSG91) sustaining 1,000+ concurrent events with 99.9% session persistence and zero cross-tenant data leakage.",
+        "Designed and integrated AI Voice API webhook listeners via Socket.io, maintaining real-time state sync across 40+ concurrent agent dashboards with sub-100ms event propagation.",
+        "Architected a Redis split-worker queuing layer and WhatsApp webhook pipeline (360Dialog) for the AI calling CRM; system is now spinning off as an independent SaaS (VaniOps) on Telnyx + Cloud Run."
+      ],
+      "metrics": ["1,000+ concurrent events", "99.9% session persistence", "Sub-100ms propagation across 40+ dashboards"]
+    },
+    {
+      "title": "Full Stack Java Developer",
+      "organization": "QSpiders Development Center",
+      "location": "Noida, India · On-site",
+      "duration": "Jan 2024 – Dec 2024",
+      "type": "apprenticeship",
+      "details": [
+        "Optimized Spring Boot RESTful services via PostgreSQL indexing and JPA query tuning, cutting API response times by 30% across 5 core endpoints.",
+        "Reduced team development overhead by 40% by introducing generic repository patterns and automated DTO mapping (Lombok + MapStruct) across a 12-module monorepo."
+      ],
+      "metrics": ["30% API response improvement", "40% dev overhead reduction"]
     }
   ],
   "projects": [
     {
+      "id": "vaniops",
+      "title": "VaniOps – AI Voice Calling SaaS",
+      "category": "ai-system",
+      "year": "2026",
+      "status": "in-progress",
+      "summary": "AI-powered voice calling + WhatsApp CRM for India's real estate market.",
+      "content": "Multi-tenant isolation, Redis-backed job queuing, real-time transcription via Deepgram, GPT-4o mini call summarization.",
+      "key_metric": "Spinning off from HomeInTown — real production traffic",
+      "architecture": ["User Call", "Telnyx Voice", "Deepgram STT", "GPT-4o mini", "Redis Queue", "WhatsApp CRM"],
+      "technologies": ["NestJS", "Telnyx", "Deepgram", "GPT-4o mini", "Redis", "Cloud Run", "Razorpay"],
+      "links": { "github": "https://github.com/CodeForgeNet/vaniops" }
+    },
+    {
+      "id": "tuneprompt",
+      "title": "TunePrompt – LLM Evaluation Framework",
+      "category": "open-source-tool",
+      "year": "2025",
+      "status": "live",
+      "summary": "Three-tier architecture benchmarking LLM output quality across OpenAI, Anthropic, and Gemini.",
+      "content": "Local CLI + cloud dashboard + unified model abstraction. Uses semantic similarity and ROUGE-based evaluation metrics. Serverless RAG backend on AWS Lambda + Upstash Redis with sub-50ms latency.",
+      "key_metric": "800+ npm installs",
+      "architecture": ["CLI Input", "Lambda Serverless", "Multi-LLM Eval", "ROUGE/Semantic Scoring", "Cloud Dashboard"],
+      "technologies": ["TypeScript", "Next.js 15", "AWS Lambda", "Supabase", "OpenAI", "Anthropic", "Gemini"],
+      "links": {
+        "npm": "https://www.npmjs.com/package/tuneprompt",
+        "live": "https://tuneprompt.dev",
+        "code": "https://github.com/CodeForgeNet/tuneprompt"
+      }
+    },
+    {
+      "id": "genesis-forge",
+      "title": "Genesis Forge – Multi-Agent Orchestration",
+      "category": "open-source-tool",
+      "year": "2025",
+      "status": "live",
+      "summary": "MCP-native orchestration system with 24 agents, 79 skills, 13 workflows.",
+      "content": "Compatible with Claude CLI, Gemini CLI, and Cline. Token-efficient pipeline design for high-throughput multi-agent tasks.",
+      "key_metric": "700+ npm downloads",
+      "architecture": ["Claude CLI / Gemini CLI", "MCP Layer", "24 Agents", "79 Skills", "13 Workflows"],
+      "technologies": ["TypeScript", "MCP", "Claude CLI", "Gemini CLI"],
+      "links": { "github": "https://github.com/CodeForgeNet/genesis-forge" }
+    },
+    {
+      "id": "opencontext",
+      "title": "OpenContext – Context Sovereignty Layer",
+      "category": "open-source-tool",
+      "year": "2025",
+      "status": "live",
+      "summary": "Open protocol for user-owned AI context with JWT-scoped auth and multi-provider LLM access.",
+      "content": "Browser extension, self-hostable backend, supports Gemini, Groq, Cloudflare Workers AI. Zero vendor lock-in.",
+      "key_metric": "3 LLM providers out of the box",
+      "architecture": ["Browser Extension", "JWT Auth", "Multi-Provider Abstraction", "Gemini/Groq/Cloudflare"],
+      "technologies": ["TypeScript", "FastAPI", "Python", "JWT", "Gemini API", "Groq"],
+      "links": { "github": "https://github.com/CodeForgeNet/opencontext" }
+    },
+    {
       "id": "ai-portfolio",
       "title": "AI-Powered 3D Portfolio",
+      "category": "ai-system",
+      "year": "2024",
+      "status": "live",
       "summary": "An interactive 3D portfolio featuring a lip-syncing avatar and an AI-powered chat interface.",
       "content": "Built with Next.js, React Three Fiber, and Zustand. Features a Ready Player Me avatar that lip-syncs to AI responses, voice interaction using Web Speech API, and a RAG-based backend for answering questions about my experience.",
-      "technologies": [
-        "Next.js",
-        "React",
-        "TypeScript",
-        "Tailwind CSS",
-        "React Three Fiber",
-        "Zustand",
-        "Node.js",
-        "Express",
-        "Google Gemini API",
-        "Pinecone",
-        "Redis",
-        "AWS Lambda"
-      ],
+      "key_metric": "Interactive 3D Voice Avatar",
+      "architecture": ["Voice Input", "Gemini Embeddings", "Pinecone Retrieval", "Gemini LLM", "Text-to-Speech", "3D Lip Sync"],
+      "technologies": ["Next.js", "React", "TypeScript", "Tailwind CSS", "React Three Fiber", "Zustand", "Node.js", "Express", "Google Gemini API", "Pinecone", "Redis", "AWS Lambda"],
       "links": {
         "live": "https://lalu-portfolio.vercel.app/",
         "code": "https://github.com/CodeForgeNet/lalu-portfolio"
@@ -128,19 +185,14 @@
     {
       "id": "revisely",
       "title": "Revisely: AI-Powered Study & Revision Platform",
+      "category": "ai-system",
+      "year": "2024",
+      "status": "live",
       "summary": "An AI-powered learning assistant for PDF-based study material using RAG and Gemini API.",
       "content": "Developed using React, FastAPI, and MongoDB. Implemented AI PDF chat, quiz generation, Pinecone vector search, Firebase Auth, and progress tracking dashboards.",
-      "technologies": [
-        "React",
-        "FastAPI",
-        "Python",
-        "MongoDB",
-        "Google Gemini API",
-        "LangChain",
-        "Pinecone",
-        "Firebase",
-        "Tailwind CSS"
-      ],
+      "key_metric": "RAG-based AI PDF chat",
+      "architecture": ["PDF Upload", "Semantic Chunking", "Vector Search", "Gemini Q&A", "Quiz Generation"],
+      "technologies": ["React", "FastAPI", "Python", "MongoDB", "Google Gemini API", "LangChain", "Pinecone", "Firebase", "Tailwind CSS"],
       "links": {
         "live": "https://revisely-ai.vercel.app/",
         "frontend": "https://github.com/CodeForgeNet/ReviselyAI-Frontend",
@@ -150,18 +202,14 @@
     {
       "id": "video-interview-proctoring-system",
       "title": "Video Interview Proctoring System",
+      "category": "ai-system",
+      "year": "2024",
+      "status": "live",
       "summary": "AI-powered system for remote interview monitoring and integrity reporting.",
       "content": "Used TensorFlow.js and MediaPipe to detect suspicious activities during interviews, integrated with real-time dashboards via Socket.io.",
-      "technologies": [
-        "React",
-        "Node.js",
-        "Express",
-        "MongoDB",
-        "TensorFlow.js",
-        "MediaPipe",
-        "Socket.io",
-        "Cloudinary"
-      ],
+      "key_metric": "TensorFlow.js Real-time Monitoring",
+      "architecture": ["Webcam Input", "MediaPipe Tracker", "Suspicious Activity Detection", "Socket.io Emit", "Dashboard Update"],
+      "technologies": ["React", "Node.js", "Express", "MongoDB", "TensorFlow.js", "MediaPipe", "Socket.io", "Cloudinary"],
       "links": {
         "live": "https://proctor-app.vercel.app/",
         "frontend": "https://github.com/CodeForgeNet/proctor-frontend",
@@ -171,8 +219,13 @@
     {
       "id": "email-trace-analyzer",
       "title": "Email Trace Analyzer",
+      "category": "full-stack",
+      "year": "2024",
+      "status": "live",
       "summary": "Analyzes email headers to identify the sender’s email service provider.",
       "content": "Built with Next.js and NestJS, integrated IMAP for auto-fetching incoming emails, deployed on Vercel and Render.",
+      "key_metric": "IMAP automated ingestion",
+      "architecture": ["IMAP Fetch", "Header Parser", "Sender Identification", "DB Storage"],
       "technologies": ["Next.js", "NestJS", "MongoDB", "IMAP"],
       "links": {
         "live": "https://email-tracer-frontend.vercel.app/",
@@ -183,8 +236,13 @@
     {
       "id": "employee-management-system",
       "title": "Employee Management System",
+      "category": "earlier-work",
+      "year": "2024",
+      "status": "live",
       "summary": "A CRUD web app for managing employee records with React and Spring Boot.",
       "content": "Developed REST APIs with Spring Data JPA and integrated with a React frontend using Axios.",
+      "key_metric": "RESTful Microservices",
+      "architecture": [],
       "technologies": ["React", "Spring Boot", "MySQL", "Axios", "Java"],
       "links": {
         "frontend": "https://github.com/CodeForgeNet/react-vite-starter",
@@ -194,15 +252,14 @@
     {
       "id": "ai-course-generator",
       "title": "AI Course Generator",
+      "category": "earlier-work",
+      "year": "2024",
+      "status": "live",
       "summary": "Automatically generates course structures using Gemini AI and Clerk authentication.",
       "content": "Built with Next.js, integrated Gemini API for course creation, Drizzle ORM for persistence, and Cloudinary for media.",
-      "technologies": [
-        "Next.js",
-        "Clerk",
-        "Gemini API",
-        "Drizzle ORM",
-        "Cloudinary"
-      ],
+      "key_metric": "AI Course Generation",
+      "architecture": [],
+      "technologies": ["Next.js", "Clerk", "Gemini API", "Drizzle ORM", "Cloudinary"],
       "links": {
         "live": "https://ai-course-generator-alpha.vercel.app/dashboard",
         "code": "https://github.com/CodeForgeNet/ai-course-generator"
@@ -211,8 +268,13 @@
     {
       "id": "askdocai",
       "title": "AskDocAI",
+      "category": "earlier-work",
+      "year": "2024",
+      "status": "live",
       "summary": "AI-powered document analysis assistant using Gemini AI.",
       "content": "Analyzes uploaded documents and provides summaries and insights directly in the browser.",
+      "key_metric": "Browser-based Docs AI",
+      "architecture": [],
       "technologies": ["HTML", "CSS", "JavaScript", "Node.js", "Gemini API"],
       "links": {
         "live": "https://askdockai.onrender.com/",
@@ -222,16 +284,22 @@
   ],
   "certifications": [
     {
+      "organization": "Anthropic",
+      "title": "Model Context Protocol (MCP) Specialist",
+      "year": "2026",
+      "skills": ["MCP", "Agentic Systems", "Multi-Agent Orchestration"]
+    },
+    {
+      "organization": "Amazon Web Services",
+      "title": "AWS Solutions Architect",
+      "year": "2025",
+      "skills": ["Cloud Architecture", "Scalability", "Hosting Solutions"]
+    },
+    {
       "organization": "JSpiders Training & Development Center – Noida",
       "title": "Java Development Certification",
       "skills": ["Core Java", "J2EE", "Spring", "Hibernate"],
       "certificate_url": "https://drive.google.com/file/d/1hbPAbF30YBMADLqGVm19jq5ukEWsCfrn/view"
-    },
-    {
-      "organization": "AWS",
-      "title": "Solutions Architecture Job Simulation (Sep 2025)",
-      "skills": ["Cloud Architecture", "Scalability", "Hosting Solutions"],
-      "certificate_url": "https://www.theforage.com/completion-certificates/pmnMSL4QiQ9JCgE3W/kkE9HyeNcw6rwCRGw_pmnMSL4QiQ9JCgE3W_68da115d8f5669efb78cd9b5_1759122788841_completion_certificate.pdf"
     }
   ],
   "current_focus": {
@@ -265,12 +333,13 @@
     ],
     "side_projects": [
       {
-        "title": "Video Interview Proctoring System (Improvement Phase)",
-        "summary": "Enhancing the AI-powered proctoring system with advanced monitoring, improved model accuracy, and refined UX/UI.",
+        "title": "VaniOps — AI Voice Calling SaaS",
+        "summary": "AI-powered voice calling + WhatsApp CRM for India's real estate market.",
         "focus_areas": [
-          "Advanced face and object detection improvements",
-          "Enhanced LLM-based anomaly reporting",
-          "Optimized backend scalability and data pipeline refinement"
+          "Multi-tenant isolation",
+          "Redis-backed job queuing",
+          "Real-time transcription via Deepgram",
+          "GPT-4o mini call summarization"
         ]
       }
     ],
@@ -294,109 +363,7 @@
             "platform": "edX",
             "link": "https://www.udemy.com/course/the-ai-engineer-course-complete-ai-engineer-bootcamp/",
             "note": "Perfect for learning AI/ML from basics. Complete AI Engineer Training: Python, NLP, Transformers, LLMs, LangChain, Hugging Face, APIs"
-          },
-          {
-            "type": "Course",
-            "name": "Spring Boot Microservices",
-            "platform": "Programming Techie (YouTube)",
-            "link": "https://www.youtube.com/playlist?list=PLSVW22jAG8pBnhAdq9S8BpLnZ0_jVBj0c",
-            "note": "Perfect for mastering backend development quickly."
-          },
-          {
-            "type": "Course",
-            "name": "Master Node JS",
-            "platform": "Piyush Garg (YouTube)",
-            "link": "https://youtube.com/playlist?list=PLinedj3B30sDby4Al-i13hQJGQoRQDfPo&si=8LvQ6EXfApWbK7hT",
-            "note": "Perfect for mastering NodeJS"
-          },
-          {
-            "type": "Book",
-            "name": "Clean Code",
-            "author": "Robert C. Martin",
-            "link": "https://www.goodreads.com/book/show/3735293-clean-code",
-            "note": "A must-read for writing maintainable and readable code."
-          },
-          {
-            "type": "Channel",
-            "name": "freeCodeCamp",
-            "platform": "YouTube",
-            "link": "https://www.youtube.com/@freecodecamp",
-            "note": "Best channel for in-depth tutorials across tech domains."
           }
-        ]
-      },
-      {
-        "category": "Recommended Tech Stack",
-        "items": [
-          {
-            "name": "React + Tailwind CSS",
-            "reason": "Modern, fast, and clean UI development stack."
-          },
-          {
-            "name": "Spring Boot / Node.js",
-            "reason": "Powerful backend frameworks for scalable apps."
-          },
-          {
-            "name": "MongoDB / PostgreSQL",
-            "reason": "Flexible and reliable databases for any project size."
-          },
-          {
-            "name": "Docker",
-            "reason": "Simplifies deployment and ensures environment consistency."
-          },
-          {
-            "name": "AWS",
-            "reason": "Best for hosting and cloud-based project deployment."
-          }
-        ]
-      },
-      {
-        "category": "Career & Productivity Tips",
-        "items": [
-          "Build projects more than you watch tutorials.",
-          "Keep your GitHub active — it reflects your progress.",
-          "Read official documentation regularly.",
-          "Write blogs or document your learning journey.",
-          "Focus on solving real-world problems, not just assignments."
-        ]
-      },
-      {
-        "category": "Communities & Platforms",
-        "items": [
-          {
-            "name": "LeetCode",
-            "type": "Platform",
-            "link": "https://leetcode.com/",
-            "note": "Best for improving problem-solving and DSA."
-          },
-          {
-            "name": "Dev.to",
-            "type": "Community",
-            "link": "https://dev.to/",
-            "note": "A great place to read and write about tech."
-          },
-          {
-            "name": "Hashnode",
-            "type": "Community",
-            "link": "https://hashnode.com/",
-            "note": "Perfect platform for sharing technical blogs."
-          },
-          {
-            "name": "GitHub",
-            "type": "Community",
-            "link": "https://github.com/",
-            "note": "Your portfolio’s heart — showcase your code."
-          }
-        ]
-      },
-      {
-        "category": "Personal Picks & Experiments",
-        "items": [
-          "Exploring LangChain for AI-driven apps.",
-          "Experimenting with React 19’s new features.",
-          "Learning Docker container orchestration.",
-          "Testing real-time features using WebSockets.",
-          "Building small ML integrations with Python APIs."
         ]
       }
     ],

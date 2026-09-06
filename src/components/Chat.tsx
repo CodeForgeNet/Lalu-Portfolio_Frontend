@@ -5,12 +5,15 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Components } from "react-markdown";
 import useAvatarStore from "@/utils/avatarStore";
+import PipelineTrace from "./PipelineTrace";
+import AvatarScene from "./AvatarScene";
+import { Send, Terminal } from "lucide-react";
 
-// Define types here or import from store if they are exported
 type Message = {
   role: "user" | "assistant" | "system";
   text: string;
   ts: number;
+  trace?: any;
 };
 
 type Source = {
@@ -25,7 +28,6 @@ export default function Chat() {
   const [input, setInput] = useState("");
   const chatBoxRef = useRef<HTMLDivElement>(null);
 
-  // Get state and actions from the global store
   const {
     messages,
     chatLoading,
@@ -37,166 +39,156 @@ export default function Chat() {
   } = useAvatarStore();
 
   useEffect(() => {
-    // Keep scroll at bottom when new messages arrive
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [messages, chatLoading]);
 
   useEffect(() => {
-    // Fetch initial suggestions only if there are no messages yet
     if (messages.length <= 1) {
       fetchInitialSuggestions();
     }
   }, [fetchInitialSuggestions, messages.length]);
 
   const handleSend = () => {
+    if (!input.trim() || isQuotaExceeded || chatLoading) return;
     submitQuery(input);
     setInput("");
   };
 
   const components: Components = {
     a: ({ ...props }) => (
-      <a {...props} target="_blank" rel="noopener noreferrer" />
+      <a {...props} target="_blank" rel="noopener noreferrer" className="text-accent underline hover:text-accent-glow" />
     ),
+    code: ({ ...props }) => (
+      <code {...props} className="font-mono bg-surface p-1 rounded text-accent" />
+    )
   };
 
   return (
-    <>
-      <h3 className="text-xl md:text-2xl font-semibold mb-4 text-transparent bg-linear-to-r from-green-300 to-sky-300 bg-clip-text flex items-center gap-3">
-        <span className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
-        Chat with Virtual Me
-      </h3>
-
-      <div
-        ref={chatBoxRef}
-        className="h-[400px] overflow-auto p-4 mb-4 rounded-lg custom-scrollbar relative bg-black/20 shadow-[0_0_20px_rgba(16,185,129,0.1)]"
-      >
-        {messages.map((m: Message, i: number) => (
-          <div
-            key={i}
-            className={`mb-4 flex ${
-              m.role === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div
-              className={`p-4 rounded-xl transition-all duration-200 ${
-                m.role === "user"
-                  ? "inline-block max-w-[85%] bg-blue-500/15 border-l-4 border-blue-500 text-white"
-                  : "w-full bg-white/5 border-l-4 border-green-500 text-slate-300"
-              }`}
-            >
-              <div
-                className={`text-xs mb-2 font-semibold ${
-                  m.role === "user" ? "text-blue-200" : "text-green-300"
-                }`}
-              >
-                {m.role === "assistant"
-                  ? "Virtual Me"
-                  : m.role === "system"
-                  ? "System"
-                  : "You"}
-              </div>
-              <div
-                className={`prose prose-xs sm:prose-sm prose-invert wrap-break-word text-slate-200 text-xs sm:text-sm`}
-              >
-                <ReactMarkdown
-                  remarkPlugins={[remarkGfm]}
-                  components={components}
-                >
-                  {m.text}
-                </ReactMarkdown>
-              </div>
-            </div>
-          </div>
-        ))}
-
-        {chatLoading && (
-          <div className="mb-4 flex justify-start">
-            <div className="inline-block p-4 bg-white/5 border-l-4 border-green-500 rounded-xl">
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce"></div>
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce [animation-delay:'0.2s']"></div>
-                <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce [animation-delay:'0.4s']"></div>
-              </div>
-            </div>
-          </div>
-        )}
+    <div className="w-full border border-border bg-surface-2 rounded-lg overflow-hidden font-mono text-sm flex flex-col shadow-2xl">
+      {/* Terminal Header */}
+      <div className="bg-surface border-b border-border px-4 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-2 text-text-muted">
+          <Terminal size={14} />
+          <span>NEURAL QUERY</span>
+        </div>
+        <div className="flex items-center gap-2 text-success text-xs">
+          <span className="w-2 h-2 rounded-full bg-success animate-pulse-slow"></span>
+          <span>LIVE</span>
+        </div>
       </div>
 
-      {lastSources.length > 0 && (
-        <div className="mb-6 relative z-20">
-          <h4 className="text-sm font-semibold mb-2 text-green-300">
-            Sources & References
-          </h4>
-          <div className="flex flex-wrap gap-2">
-            {lastSources.map((source: Source, idx: number) => (
-              <div
-                key={idx}
-                className="bg-white/5 border border-white/10 rounded-lg p-2 text-xs sm:text-sm text-slate-300"
-              >
-                <div className="font-medium text-green-400 mb-1">
-                  {source.metadata?.title || `Source ${idx + 1}`}
-                  {source.score && ` (${(source.score * 100).toFixed(0)}%)`}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {suggestions.length > 0 && !chatLoading && (
-        <div className="mb-4">
-          <h4 className="text-sm font-semibold mb-2 text-slate-300 flex items-center gap-2">
-            <span>Suggested Questions</span>
-          </h4>
-          <div className="flex flex-wrap gap-2">
-            {suggestions.map((s: string, idx: number) => (
-              <button
-                key={idx}
-                className="bg-white/5 border border-white/10 rounded-full px-4 py-2 text-xs sm:text-sm text-slate-300 cursor-pointer transition-all duration-300 hover:bg-linear-to-r hover:from-blue-500 hover:to-green-500 hover:text-white hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
-                onClick={() => submitQuery(s)}
-                disabled={isQuotaExceeded}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {isQuotaExceeded ? (
-        <div className="text-center p-4 bg-red-500/10 border border-red-500/30 rounded-lg text-red-300">
-          The daily API quota has been reached. Please try again tomorrow.
-        </div>
-      ) : (
-        <div className="flex gap-2">
+      <div className="p-4 bg-surface-2">
+        <p className="text-text-muted mb-4">Ask me anything about my experience or projects.</p>
+        
+        {/* Input Area */}
+        <div className="flex items-center gap-2 mb-6">
+          <span className="text-accent">{">"}</span>
           <input
-            className="grow px-4 py-3 bg-black/20 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500/50 focus:border-transparent placeholder:text-slate-500 text-sm sm:text-base text-slate-200"
-            placeholder="Ask about projects, experience, tech stack..."
+            className="flex-1 bg-transparent border-none outline-none text-text placeholder-text-muted focus:ring-0"
+            placeholder="What production AI systems have you built?"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => {
               if (e.key === "Enter") handleSend();
             }}
-          />
-          <button
-            className="px-4 py-2 bg-linear-to-r from-green-500 to-blue-500 text-white rounded-lg hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold flex items-center gap-2 shadow-lg hover:shadow-blue-500/50"
-            onClick={handleSend}
             disabled={chatLoading || isQuotaExceeded}
+            autoFocus
+          />
+          <button 
+            onClick={handleSend}
+            disabled={chatLoading || isQuotaExceeded || !input.trim()}
+            className="text-text-muted hover:text-accent transition-colors disabled:opacity-50"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-            </svg>
-            <span className="hidden lg:inline text-sm sm:text-base">Send</span>
+            <Send size={16} />
           </button>
         </div>
-      )}
-    </>
+
+        {isQuotaExceeded && (
+          <div className="text-error mb-4">
+            [ERROR] API quota exceeded. Please try again tomorrow.
+          </div>
+        )}
+
+        <div 
+          ref={chatBoxRef}
+          className="h-[400px] overflow-y-auto pr-2 custom-scrollbar flex flex-col gap-6"
+        >
+          {messages.slice(1).map((m: Message, i: number) => (
+            <div key={i} className="flex flex-col gap-2">
+              {m.role === "user" ? (
+                <div className="text-text">
+                  <span className="text-accent">{">"}</span> {m.text}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {/* Pipeline Trace for Assistant Message */}
+                  {m.trace && <PipelineTrace trace={m.trace} />}
+                  
+                  {/* Response content */}
+                  <div>
+                    <div className="text-text-muted mb-2 border-b border-border border-dashed pb-1 text-xs whitespace-nowrap overflow-hidden text-ellipsis">── RESPONSE ────────────────────────────────────────────────────────</div>
+                    <div className="prose prose-invert prose-sm max-w-none text-text font-sans break-words whitespace-pre-wrap overflow-hidden">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components}>
+                        {m.text}
+                      </ReactMarkdown>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {chatLoading && (
+            <div className="flex flex-col gap-2">
+              <PipelineTrace trace={null} isLoading={true} />
+            </div>
+          )}
+
+          {/* Bottom Area: Sources, Suggestions, Avatar */}
+          {messages.length > 1 && !chatLoading && (
+            <div className="mt-4 pt-4 border-t border-border flex justify-between items-end">
+              <div className="flex flex-col gap-4 flex-1 pr-4">
+                {lastSources.length > 0 && (
+                  <div>
+                    <div className="text-text-muted mb-1 text-xs">SOURCES</div>
+                    <div className="flex flex-wrap gap-2">
+                      {lastSources.map((s: Source, idx: number) => (
+                        <span key={idx} className="text-xs text-accent">
+                          {s.metadata?.title || s.title || `doc-${idx}`}
+                          {s.score && ` [${Math.round(s.score * 100)}%]`}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {suggestions.length > 0 && (
+                  <div>
+                    <div className="text-text-muted mb-1 text-xs">SUGGEST</div>
+                    <div className="flex flex-col gap-1">
+                      {suggestions.map((s: string, idx: number) => (
+                        <button
+                          key={idx}
+                          onClick={() => submitQuery(s)}
+                          className="text-left text-sm text-text hover:text-accent transition-colors truncate"
+                        >
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="shrink-0">
+                <AvatarScene />
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 }

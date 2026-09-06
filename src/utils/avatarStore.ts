@@ -7,6 +7,8 @@ type Message = {
   role: "user" | "assistant" | "system";
   text: string;
   ts: number;
+  trace?: any;
+  isStreaming?: boolean;
 };
 
 interface SourceMetadata {
@@ -188,70 +190,111 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
     }));
 
     try {
-      const res = await axios.post(
-        `${
-          process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"
-        }/api/ask`,
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"}/api/ask-stream`,
         {
-          question: text,
-          topK: 3,
-        },
-        {
+          method: "POST",
           headers: {
-            "x-api-key": process.env.NEXT_PUBLIC_API_SECRET_KEY,
+            "Content-Type": "application/json",
+            "x-api-key": process.env.NEXT_PUBLIC_API_SECRET_KEY || "",
           },
+          body: JSON.stringify({ question: text, topK: 3 }),
         }
       );
 
-      const assistantText =
-        res.data?.text || "Sorry, I had an issue processing that.";
-      const assistantMsg: Message = {
+      if (!response.ok) {
+        if (response.status === 429) {
+           set({ isQuotaExceeded: true });
+           throw new Error("QUOTA_EXCEEDED");
+        }
+        throw new Error(`Server error: ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error("No readable stream");
+
+      const decoder = new TextDecoder();
+      let assistantMsg: Message = {
         role: "assistant",
-        text: assistantText,
+        text: "",
         ts: Date.now(),
+        isStreaming: true,
+        trace: { steps: [] }
       };
 
       set((state) => ({
         messages: [...state.messages, assistantMsg],
-        lastSources: res.data?.sources || [],
-        suggestions: res.data?.suggestions || [],
+        chatLoading: false, // Turn off global loading since stream started
       }));
-    } catch (err: unknown) {
-      // Changed to unknown
-      if (isAxiosError(err) && err.response) {
-        const data = err.response.data as BackendErrorResponse | undefined;
-        if (data?.error === "QUOTA_EXCEEDED") {
-          set({ isQuotaExceeded: true });
-          const errMsg: Message = {
-            role: "assistant",
-            text: "The daily API quota has been reached. Please try again tomorrow.",
-            ts: Date.now(),
-          };
-          set((state) => ({ messages: [...state.messages, errMsg] }));
-        } else {
-          const message = isAxiosError(err)
-            ? err.message
-            : "An unknown error occurred";
-          const errMsg: Message = {
-            role: "assistant",
-            text: `Error: ${message}`,
-            ts: Date.now(),
-          };
-          set((state) => ({ messages: [...state.messages, errMsg] }));
+
+      let done = false;
+      let buffer = "";
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read();
+        done = readerDone;
+        if (value) {
+          buffer += decoder.decode(value, { stream: true });
+          const events = buffer.split('\n\n');
+          buffer = events.pop() || ""; // Keep incomplete event in buffer
+
+          for (const ev of events) {
+            const eventMatch = ev.match(/^event: (.*?)\ndata: (.*)$/s);
+            if (eventMatch) {
+              const eventType = eventMatch[1];
+              let eventData;
+              try {
+                eventData = JSON.parse(eventMatch[2]);
+              } catch (e) {
+                continue;
+              }
+
+              set((state) => {
+                const msgs = [...state.messages];
+                const lastIdx = msgs.length - 1;
+                // Only update if the last message is ours
+                if (msgs[lastIdx]?.isStreaming) {
+                  const currentMsg = { ...msgs[lastIdx] };
+
+                  if (eventType === 'step_start') {
+                    currentMsg.trace = { ...currentMsg.trace };
+                    currentMsg.trace.steps = [...(currentMsg.trace.steps || []), { ...eventData, status: 'running' }];
+                  } else if (eventType === 'step_complete') {
+                    currentMsg.trace = { ...currentMsg.trace };
+                    currentMsg.trace.steps = (currentMsg.trace.steps || []).map((s: any) => 
+                      s.id === eventData.id ? { ...s, ...eventData, status: 'complete' } : s
+                    );
+                  } else if (eventType === 'chunk') {
+                    currentMsg.text += eventData.text;
+                  } else if (eventType === 'done') {
+                    currentMsg.isStreaming = false;
+                    return {
+                      messages: [...msgs.slice(0, lastIdx), currentMsg],
+                      lastSources: eventData.sources || [],
+                      suggestions: eventData.suggestions || []
+                    };
+                  } else if (eventType === 'error') {
+                     currentMsg.isStreaming = false;
+                     currentMsg.text = `Error: ${eventData.error}`;
+                  }
+
+                  msgs[lastIdx] = currentMsg;
+                  return { messages: msgs };
+                }
+                return state;
+              });
+            }
+          }
         }
-      } else {
-        const message = isAxiosError(err)
-          ? err.message
-          : "An unknown error occurred";
-        const errMsg: Message = {
-          role: "assistant",
-          text: `Error: ${message}`,
-          ts: Date.now(),
-        };
-        set((state) => ({ messages: [...state.messages, errMsg] }));
       }
-    } finally {
-      set({ chatLoading: false });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "An unknown error occurred";
+      const errMsg: Message = {
+        role: "assistant",
+        text: message === "QUOTA_EXCEEDED" ? "The daily API quota has been reached. Please try again tomorrow." : `Error: ${message}`,
+        ts: Date.now(),
+      };
+      set((state) => ({ messages: [...state.messages, errMsg], chatLoading: false }));
     }
   },
 

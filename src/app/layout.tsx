@@ -1,13 +1,21 @@
 import "./globals.css";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import Header from "@/components/Header";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ 
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
+});
 
 export const metadata: Metadata = {
-  title: "Lalu Kumar - Portfolio",
-  description: "Full Stack Developer Portfolio with AI Chat",
+  title: "Lalu Kumar | AI Systems & Full Stack Engineer",
+  description: "Building production RAG pipelines, multi-agent systems, and AI voice infrastructure.",
 };
 
 export default function RootLayout({
@@ -17,7 +25,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-              <body className={`${inter.className} bg-gray-50 min-h-screen`} suppressHydrationWarning={true}>
+      <body className={`${inter.variable} ${jetbrainsMono.variable} min-h-screen`} suppressHydrationWarning={true}>
         <Header />
         {children}
       </body>
