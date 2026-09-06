@@ -6,7 +6,10 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "lab:prepare": "node scripts/lab-corpus.ts",
+    "lab:setup": "node --env-file-if-exists=.env.local scripts/lab-setup.ts",
+    "test:lab": "node --test tests/lab/*.test.ts"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.6",

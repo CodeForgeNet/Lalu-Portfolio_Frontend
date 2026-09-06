@@ -1,0 +1,383 @@
+{
+  "provenance": "Captured from a real Google embedding, Pinecone retrieval, and streamed Google generation run by lab:setup. Citation IDs were revalidated from the unchanged captured text, including grouped citations; timings and provider output are unchanged.",
+  "run": {
+    "id": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+    "settings": {
+      "question": "Why did the sample incident create two jobs for one event, and what fixed it?",
+      "documentIds": [
+        "portfolio-cache",
+        "portfolio-rag",
+        "webhook-design",
+        "webhook-incident"
+      ],
+      "topK": 4
+    },
+    "corpusVersion": "d121cc12d5b44895",
+    "startedAt": "2026-09-06T14:57:20.353Z",
+    "embeddingModel": "gemini-embedding-001",
+    "generationModel": "gemini-3.5-flash-lite",
+    "status": "complete",
+    "stages": [
+      {
+        "id": "embed",
+        "status": "complete",
+        "input": "Why did the sample incident create two jobs for one event, and what fixed it?",
+        "durationMs": 490,
+        "output": "gemini-embedding-001: 768 dimensions. First 8 values: 0.04252, 0.00655, 0.01086, -0.09749, 0.00060, -0.03248, -0.00510, -0.01024"
+      },
+      {
+        "id": "retrieve",
+        "status": "complete",
+        "input": "Top 4; documents: portfolio-cache, portfolio-rag, webhook-design, webhook-incident; corpus d121cc12d5b44895",
+        "durationMs": 1753,
+        "output": "S1: Duplicate-delivery incident / Diagnosis (0.8167)\nS2: Duplicate-delivery incident / Observed sequence (0.7784)\nS3: Webhook processing design / Event identity and acceptance (0.7134)\nS4: Webhook processing design / Status and assumptions (0.7103)"
+      },
+      {
+        "id": "context",
+        "status": "complete",
+        "input": "4 selected passages; no additional résumé or conversation context.",
+        "durationMs": 0,
+        "output": "[S1] Duplicate-delivery incident / Diagnosis\nThe incident's evidence points to event identity being discarded at the enqueue boundary. Checking whether job_702 already existed could not detect job_701 as the same event. The missing invariant was uniqueness of tenant_id plus provider_event_id across deliveries. A queue job ID alone was insufficient in this sample implementation.\n\n[S2] Duplicate-delivery incident / Observed sequence\nAt 10:02:00, delivery A arrived for tenant atlas with provider event evt_104. At 10:02:01, the handler queued job job_701. Its acknowledgement was lost. At 10:02:05, the provider retried the same event; delivery B queued job job_702. Both jobs described the same underlying event, but the old implementation used a newly generated job ID as its only uniqueness check.\n\n[S3] Webhook processing design / Event identity and acceptance\nIdentify an event by the pair tenant_id and provider_event_id. Verify the provider signature before accepting the event. Insert the event into an inbox table with a unique constraint on that pair. A conflicting insert identifies a duplicate; acknowledge it without creating another logical job. Distinct tenants may legitimately have equal provider event IDs.\n\n[S4] Webhook processing design / Status and assumptions\nThis document is a synthetic engineering example for the workbench. It is not a claim about a deployed customer system or a specific open-source contribution. The example provider can deliver the same event more than once, and queue workers can retry jobs after interruption."
+      },
+      {
+        "id": "generate",
+        "status": "complete",
+        "input": "Question: Why did the sample incident create two jobs for one event, and what fixed it?\n\nEvidence supplied to the model:\n[S1] Duplicate-delivery incident / Diagnosis\nThe incident's evidence points to event identity being discarded at the enqueue boundary. Checking whether job_702 already existed could not detect job_701 as the same event. The missing invariant was uniqueness of tenant_id plus provider_event_id across deliveries. A queue job ID alone was insufficient in this sample implementation.\n\n[S2] Duplicate-delivery incident / Observed sequence\nAt 10:02:00, delivery A arrived for tenant atlas with provider event evt_104. At 10:02:01, the handler queued job job_701. Its acknowledgement was lost. At 10:02:05, the provider retried the same event; delivery B queued job job_702. Both jobs described the same underlying event, but the old implementation used a newly generated job ID as its only uniqueness check.\n\n[S3] Webhook processing design / Event identity and acceptance\nIdentify an event by the pair tenant_id and provider_event_id. Verify the provider signature before accepting the event. Insert the event into an inbox table with a unique constraint on that pair. A conflicting insert identifies a duplicate; acknowledge it without creating another logical job. Distinct tenants may legitimately have equal provider event IDs.\n\n[S4] Webhook processing design / Status and assumptions\nThis document is a synthetic engineering example for the workbench. It is not a claim about a deployed customer system or a specific open-source contribution. The example provider can deliver the same event more than once, and queue workers can retry jobs after interruption.",
+        "durationMs": 1065,
+        "output": "gemini-3.5-flash-lite\nThe sample incident created two jobs for one event because event identity was discarded at the enqueue boundary, and the old implementation used a newly generated queue job ID as its only uniqueness check [S1, S2]. When delivery A queued job_701 and its acknowledgement was lost, the provider retried the same event as delivery B, which queued job_702 because it could not detect that job_701 was the same event [S1, S2]. \n\nThe design fixes this by identifying events by the pair of tenant_id and provider_event_id, verifying the provider signature, and inserting the event into an inbox table with a unique constraint on that pair [S3]. A conflicting insert identifies a duplicate, which is then acknowledged without creating another logical job [S3]."
+      }
+    ],
+    "passages": [
+      {
+        "id": "webhook-incident-682-1017",
+        "documentId": "webhook-incident",
+        "heading": "Diagnosis",
+        "start": 682,
+        "end": 1017,
+        "text": "The incident's evidence points to event identity being discarded at the enqueue boundary. Checking whether job_702 already existed could not detect job_701 as the same event. The missing invariant was uniqueness of tenant_id plus provider_event_id across deliveries. A queue job ID alone was insufficient in this sample implementation.",
+        "citationId": "S1",
+        "rank": 1,
+        "score": 0.816719055,
+        "title": "Duplicate-delivery incident"
+      },
+      {
+        "id": "webhook-incident-299-666",
+        "documentId": "webhook-incident",
+        "heading": "Observed sequence",
+        "start": 299,
+        "end": 666,
+        "text": "At 10:02:00, delivery A arrived for tenant atlas with provider event evt_104. At 10:02:01, the handler queued job job_701. Its acknowledgement was lost. At 10:02:05, the provider retried the same event; delivery B queued job job_702. Both jobs described the same underlying event, but the old implementation used a newly generated job ID as its only uniqueness check.",
+        "citationId": "S2",
+        "rank": 2,
+        "score": 0.778381407,
+        "title": "Duplicate-delivery incident"
+      },
+      {
+        "id": "webhook-design-396-755",
+        "documentId": "webhook-design",
+        "heading": "Event identity and acceptance",
+        "start": 396,
+        "end": 755,
+        "text": "Identify an event by the pair tenant_id and provider_event_id. Verify the provider signature before accepting the event. Insert the event into an inbox table with a unique constraint on that pair. A conflicting insert identifies a duplicate; acknowledge it without creating another logical job. Distinct tenants may legitimately have equal provider event IDs.",
+        "citationId": "S3",
+        "rank": 3,
+        "score": 0.713394165,
+        "title": "Webhook processing design"
+      },
+      {
+        "id": "webhook-design-85-360",
+        "documentId": "webhook-design",
+        "heading": "Status and assumptions",
+        "start": 85,
+        "end": 360,
+        "text": "This document is a synthetic engineering example for the workbench. It is not a claim about a deployed customer system or a specific open-source contribution. The example provider can deliver the same event more than once, and queue workers can retry jobs after interruption.",
+        "citationId": "S4",
+        "rank": 4,
+        "score": 0.710250854,
+        "title": "Webhook processing design"
+      }
+    ],
+    "answer": "The sample incident created two jobs for one event because event identity was discarded at the enqueue boundary, and the old implementation used a newly generated queue job ID as its only uniqueness check [S1, S2]. When delivery A queued job_701 and its acknowledgement was lost, the provider retried the same event as delivery B, which queued job_702 because it could not detect that job_701 was the same event [S1, S2]. \n\nThe design fixes this by identifying events by the pair of tenant_id and provider_event_id, verifying the provider signature, and inserting the event into an inbox table with a unique constraint on that pair [S3]. A conflicting insert identifies a duplicate, which is then acknowledged without creating another logical job [S3].",
+    "citations": [
+      {
+        "id": "S1",
+        "chunkId": "webhook-incident-682-1017",
+        "documentId": "webhook-incident"
+      },
+      {
+        "id": "S2",
+        "chunkId": "webhook-incident-299-666",
+        "documentId": "webhook-incident"
+      },
+      {
+        "id": "S3",
+        "chunkId": "webhook-design-396-755",
+        "documentId": "webhook-design"
+      }
+    ],
+    "warnings": [],
+    "events": [
+      {
+        "type": "start",
+        "settings": {
+          "question": "Why did the sample incident create two jobs for one event, and what fixed it?",
+          "documentIds": [
+            "portfolio-cache",
+            "portfolio-rag",
+            "webhook-design",
+            "webhook-incident"
+          ],
+          "topK": 4
+        },
+        "corpusVersion": "d121cc12d5b44895",
+        "startedAt": "2026-09-06T14:57:20.353Z",
+        "embeddingModel": "gemini-embedding-001",
+        "generationModel": "gemini-3.5-flash-lite",
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 0,
+        "elapsedMs": 4
+      },
+      {
+        "type": "stage",
+        "stage": {
+          "id": "embed",
+          "status": "running",
+          "input": "Why did the sample incident create two jobs for one event, and what fixed it?"
+        },
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 1,
+        "elapsedMs": 4
+      },
+      {
+        "type": "stage",
+        "stage": {
+          "id": "embed",
+          "status": "complete",
+          "durationMs": 490,
+          "output": "gemini-embedding-001: 768 dimensions. First 8 values: 0.04252, 0.00655, 0.01086, -0.09749, 0.00060, -0.03248, -0.00510, -0.01024"
+        },
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 2,
+        "elapsedMs": 494
+      },
+      {
+        "type": "stage",
+        "stage": {
+          "id": "retrieve",
+          "status": "running",
+          "input": "Top 4; documents: portfolio-cache, portfolio-rag, webhook-design, webhook-incident; corpus d121cc12d5b44895"
+        },
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 3,
+        "elapsedMs": 494
+      },
+      {
+        "type": "sources",
+        "passages": [
+          {
+            "id": "webhook-incident-682-1017",
+            "documentId": "webhook-incident",
+            "heading": "Diagnosis",
+            "start": 682,
+            "end": 1017,
+            "text": "The incident's evidence points to event identity being discarded at the enqueue boundary. Checking whether job_702 already existed could not detect job_701 as the same event. The missing invariant was uniqueness of tenant_id plus provider_event_id across deliveries. A queue job ID alone was insufficient in this sample implementation.",
+            "citationId": "S1",
+            "rank": 1,
+            "score": 0.816719055,
+            "title": "Duplicate-delivery incident"
+          },
+          {
+            "id": "webhook-incident-299-666",
+            "documentId": "webhook-incident",
+            "heading": "Observed sequence",
+            "start": 299,
+            "end": 666,
+            "text": "At 10:02:00, delivery A arrived for tenant atlas with provider event evt_104. At 10:02:01, the handler queued job job_701. Its acknowledgement was lost. At 10:02:05, the provider retried the same event; delivery B queued job job_702. Both jobs described the same underlying event, but the old implementation used a newly generated job ID as its only uniqueness check.",
+            "citationId": "S2",
+            "rank": 2,
+            "score": 0.778381407,
+            "title": "Duplicate-delivery incident"
+          },
+          {
+            "id": "webhook-design-396-755",
+            "documentId": "webhook-design",
+            "heading": "Event identity and acceptance",
+            "start": 396,
+            "end": 755,
+            "text": "Identify an event by the pair tenant_id and provider_event_id. Verify the provider signature before accepting the event. Insert the event into an inbox table with a unique constraint on that pair. A conflicting insert identifies a duplicate; acknowledge it without creating another logical job. Distinct tenants may legitimately have equal provider event IDs.",
+            "citationId": "S3",
+            "rank": 3,
+            "score": 0.713394165,
+            "title": "Webhook processing design"
+          },
+          {
+            "id": "webhook-design-85-360",
+            "documentId": "webhook-design",
+            "heading": "Status and assumptions",
+            "start": 85,
+            "end": 360,
+            "text": "This document is a synthetic engineering example for the workbench. It is not a claim about a deployed customer system or a specific open-source contribution. The example provider can deliver the same event more than once, and queue workers can retry jobs after interruption.",
+            "citationId": "S4",
+            "rank": 4,
+            "score": 0.710250854,
+            "title": "Webhook processing design"
+          }
+        ],
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 4,
+        "elapsedMs": 2248
+      },
+      {
+        "type": "stage",
+        "stage": {
+          "id": "retrieve",
+          "status": "complete",
+          "durationMs": 1753,
+          "output": "S1: Duplicate-delivery incident / Diagnosis (0.8167)\nS2: Duplicate-delivery incident / Observed sequence (0.7784)\nS3: Webhook processing design / Event identity and acceptance (0.7134)\nS4: Webhook processing design / Status and assumptions (0.7103)"
+        },
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 5,
+        "elapsedMs": 2248
+      },
+      {
+        "type": "stage",
+        "stage": {
+          "id": "context",
+          "status": "running",
+          "input": "4 selected passages; no additional résumé or conversation context."
+        },
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 6,
+        "elapsedMs": 2248
+      },
+      {
+        "type": "stage",
+        "stage": {
+          "id": "context",
+          "status": "complete",
+          "durationMs": 0,
+          "output": "[S1] Duplicate-delivery incident / Diagnosis\nThe incident's evidence points to event identity being discarded at the enqueue boundary. Checking whether job_702 already existed could not detect job_701 as the same event. The missing invariant was uniqueness of tenant_id plus provider_event_id across deliveries. A queue job ID alone was insufficient in this sample implementation.\n\n[S2] Duplicate-delivery incident / Observed sequence\nAt 10:02:00, delivery A arrived for tenant atlas with provider event evt_104. At 10:02:01, the handler queued job job_701. Its acknowledgement was lost. At 10:02:05, the provider retried the same event; delivery B queued job job_702. Both jobs described the same underlying event, but the old implementation used a newly generated job ID as its only uniqueness check.\n\n[S3] Webhook processing design / Event identity and acceptance\nIdentify an event by the pair tenant_id and provider_event_id. Verify the provider signature before accepting the event. Insert the event into an inbox table with a unique constraint on that pair. A conflicting insert identifies a duplicate; acknowledge it without creating another logical job. Distinct tenants may legitimately have equal provider event IDs.\n\n[S4] Webhook processing design / Status and assumptions\nThis document is a synthetic engineering example for the workbench. It is not a claim about a deployed customer system or a specific open-source contribution. The example provider can deliver the same event more than once, and queue workers can retry jobs after interruption."
+        },
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 7,
+        "elapsedMs": 2248
+      },
+      {
+        "type": "stage",
+        "stage": {
+          "id": "generate",
+          "status": "running",
+          "input": "Question: Why did the sample incident create two jobs for one event, and what fixed it?\n\nEvidence supplied to the model:\n[S1] Duplicate-delivery incident / Diagnosis\nThe incident's evidence points to event identity being discarded at the enqueue boundary. Checking whether job_702 already existed could not detect job_701 as the same event. The missing invariant was uniqueness of tenant_id plus provider_event_id across deliveries. A queue job ID alone was insufficient in this sample implementation.\n\n[S2] Duplicate-delivery incident / Observed sequence\nAt 10:02:00, delivery A arrived for tenant atlas with provider event evt_104. At 10:02:01, the handler queued job job_701. Its acknowledgement was lost. At 10:02:05, the provider retried the same event; delivery B queued job job_702. Both jobs described the same underlying event, but the old implementation used a newly generated job ID as its only uniqueness check.\n\n[S3] Webhook processing design / Event identity and acceptance\nIdentify an event by the pair tenant_id and provider_event_id. Verify the provider signature before accepting the event. Insert the event into an inbox table with a unique constraint on that pair. A conflicting insert identifies a duplicate; acknowledge it without creating another logical job. Distinct tenants may legitimately have equal provider event IDs.\n\n[S4] Webhook processing design / Status and assumptions\nThis document is a synthetic engineering example for the workbench. It is not a claim about a deployed customer system or a specific open-source contribution. The example provider can deliver the same event more than once, and queue workers can retry jobs after interruption."
+        },
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 8,
+        "elapsedMs": 2248
+      },
+      {
+        "type": "delta",
+        "text": "The sample",
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 9,
+        "elapsedMs": 3155
+      },
+      {
+        "type": "delta",
+        "text": " incident created two jobs for one event because event identity was discarded at the enqueue boundary, and the old",
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 10,
+        "elapsedMs": 3156
+      },
+      {
+        "type": "delta",
+        "text": " implementation used a newly generated queue job ID as its only uniqueness check [S1, S2]. When delivery A queued",
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 11,
+        "elapsedMs": 3156
+      },
+      {
+        "type": "delta",
+        "text": " job_701 and its acknowledgement was lost, the provider retried the same event as delivery B, which queued",
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 12,
+        "elapsedMs": 3156
+      },
+      {
+        "type": "delta",
+        "text": " job_702 because it could not detect that job_701 was the same event [S1, S2]. \n\n",
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 13,
+        "elapsedMs": 3156
+      },
+      {
+        "type": "delta",
+        "text": "The design fixes this by identifying events by the pair of tenant_id and provider_event_id, verifying the provider signature, and",
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 14,
+        "elapsedMs": 3212
+      },
+      {
+        "type": "delta",
+        "text": " inserting the event into an inbox table with a unique constraint on that pair [S3]. A conflicting insert identifies a duplicate",
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 15,
+        "elapsedMs": 3281
+      },
+      {
+        "type": "delta",
+        "text": ", which is then acknowledged without creating another logical job [S3].",
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 16,
+        "elapsedMs": 3297
+      },
+      {
+        "type": "stage",
+        "stage": {
+          "id": "generate",
+          "status": "complete",
+          "durationMs": 1065,
+          "output": "gemini-3.5-flash-lite\nThe sample incident created two jobs for one event because event identity was discarded at the enqueue boundary, and the old implementation used a newly generated queue job ID as its only uniqueness check [S1, S2]. When delivery A queued job_701 and its acknowledgement was lost, the provider retried the same event as delivery B, which queued job_702 because it could not detect that job_701 was the same event [S1, S2]. \n\nThe design fixes this by identifying events by the pair of tenant_id and provider_event_id, verifying the provider signature, and inserting the event into an inbox table with a unique constraint on that pair [S3]. A conflicting insert identifies a duplicate, which is then acknowledged without creating another logical job [S3]."
+        },
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 17,
+        "elapsedMs": 3313
+      },
+      {
+        "type": "done",
+        "citations": [
+          {
+            "id": "S1",
+            "chunkId": "webhook-incident-682-1017",
+            "documentId": "webhook-incident"
+          },
+          {
+            "id": "S2",
+            "chunkId": "webhook-incident-299-666",
+            "documentId": "webhook-incident"
+          },
+          {
+            "id": "S3",
+            "chunkId": "webhook-design-396-755",
+            "documentId": "webhook-design"
+          }
+        ],
+        "warnings": [],
+        "usage": {
+          "inputTokens": 504,
+          "outputTokens": 164,
+          "totalTokens": 668
+        },
+        "generationModel": "gemini-3.5-flash-lite",
+        "totalDurationMs": 3313,
+        "runId": "a4b88ecf-64b0-464e-b886-a88aa31d5f8f",
+        "sequence": 18,
+        "elapsedMs": 3313
+      }
+    ],
+    "usage": {
+      "inputTokens": 504,
+      "outputTokens": 164,
+      "totalTokens": 668
+    },
+    "totalDurationMs": 3313
+  }
+}

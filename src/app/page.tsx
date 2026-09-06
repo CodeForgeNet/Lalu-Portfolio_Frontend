@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import OpenSourceCard from "@/components/OpenSourceCard";
 import Link from "next/link";
-import { ArrowRight, Code2 } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Code2, ScanSearch } from "lucide-react";
 
 // Dynamically import Chat component to prevent hydration issues
 const Chat = dynamic(() => import("@/components/Chat"), { ssr: false });
@@ -69,7 +69,43 @@ export default function Home() {
           </motion.div>
         </section>
 
-        {/* Section B: Neural Query Terminal */}
+        {/* Section B: Featured Lab Workbench */}
+        <section>
+          <Link href="/lab/documents" className="group block">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+              className="relative overflow-hidden rounded-xl border border-accent/20 bg-surface p-6 md:p-8 transition-all duration-300 hover:-translate-y-1 hover:border-accent/50 hover:shadow-[0_0_40px_rgba(244,244,245,0.08)]"
+            >
+              <div className="pointer-events-none absolute -right-24 -top-28 h-64 w-64 rounded-full bg-accent/10 blur-3xl transition-opacity duration-300 group-hover:opacity-80" />
+              <div className="relative flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
+                <div className="max-w-2xl">
+                  <div className="mb-5 flex items-center gap-3 text-xs font-mono uppercase tracking-[0.18em] text-accent">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-accent/20 bg-accent/10">
+                      <ScanSearch size={15} />
+                    </span>
+                    Featured in the Lab
+                  </div>
+                  <h2 className="text-2xl font-medium tracking-tight text-text md:text-3xl">
+                    Investigate the answer, not just the output.
+                  </h2>
+                  <p className="mt-3 max-w-xl text-base leading-relaxed text-text-muted md:text-lg">
+                    Ask a question, inspect the evidence behind it, and replay the result with a document removed. A live look at how a production RAG system thinks.
+                  </p>
+                </div>
+
+                <div className="flex shrink-0 items-center gap-2 text-sm font-medium text-text transition-colors group-hover:text-accent">
+                  Open document investigation
+                  <ArrowUpRight size={18} className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+                </div>
+              </div>
+            </motion.div>
+          </Link>
+        </section>
+
+        {/* Section C: Neural Query Terminal */}
         <section>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -88,7 +124,7 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {resume.open_source?.map((oss: any, i: number) => (
+            {resume.open_source?.map((oss, i) => (
               <motion.div
                 key={oss.pr_number}
                 initial={{ opacity: 0, y: 20 }}

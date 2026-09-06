@@ -1,0 +1,215 @@
+{
+  "version": "d121cc12d5b44895",
+  "documents": [
+    {
+      "id": "portfolio-rag",
+      "title": "Portfolio RAG implementation",
+      "version": "1",
+      "kind": "implementation",
+      "source": "Lalu-Portfolio_Backend/src/routes/ask.ts",
+      "content": "# How the portfolio answers a question\n\n## Implementation observed in this repository\n\nThe existing portfolio chat calls POST /api/ask-stream on an Express backend. The backend creates a 768-dimensional Gemini embedding for the visitor's question, checks a Redis semantic answer cache, and queries Pinecone when the cache misses. These are the implemented stages in Lalu-Portfolio_Backend/src/routes/ask.ts.\n\n## Retrieval and answer context\n\nThe Pinecone query asks for the top matching vectors and their metadata. The ingestion script creates separate records for projects, experience, personal details, and other résumé sections. This is section-based ingestion, not a general PDF parser. Each retrieved record contributes its metadata content to the generation prompt.\n\nThe existing chat also appends the full résumé JSON as fallback context. Consequently, its answer may use résumé facts beyond the displayed retrieval results. The document workbench uses a separate pipeline: only passages from the visitor's selected documents enter its prompt. Excluding a document removes it from retrieval and generation context.\n\n## Streaming and provider behavior\n\nThe existing Express route emits step_start and step_complete events around embedding, vector search, and generation. Generated text is sent as chunk events. A done event includes sources and suggested follow-up questions. If Gemini generation fails, the route tries OpenRouter. The current route labels the generation stage as Gemini even when that fallback executes.\n\n## What this implementation does not establish\n\nThe source code describes behavior, not a measured production benchmark. It does not establish retrieval precision, production latency percentiles, or availability guarantees. The workbench reports timings from each actual run. Its source links validate where excerpts came from; they do not automatically prove every generated claim is correct.\n\n## Source references\n\nSee Lalu-Portfolio_Backend/src/routes/ask.ts for request handling, Lalu-Portfolio_Backend/scripts/import_embeddings.ts for ingestion, and Lalu-Portfolio_Frontend/src/utils/avatarStore.ts for the existing streaming client. These paths refer to the repository snapshot used to prepare this collection.\n"
+    },
+    {
+      "id": "portfolio-cache",
+      "title": "Portfolio cache and tradeoffs",
+      "version": "1",
+      "kind": "implementation",
+      "source": "Lalu-Portfolio_Backend/src/services/cache.ts",
+      "content": "# How the portfolio semantic cache works\n\n## Implemented lookup\n\nThe existing backend embeds the question before looking in Redis. The getCachedResponse function in Lalu-Portfolio_Backend/src/services/cache.ts reads keys matching cache:question:*, loads the cached question embeddings, and computes cosine similarity against each. The highest-scoring answer is reused when its score meets CACHE_SIMILARITY_THRESHOLD, which defaults to 0.92.\n\n## What a cache hit saves\n\nA cache hit returns the stored answer, sources, and suggestions. It skips the new Pinecone retrieval and answer generation, but it does not skip question embedding. A retrieval similarity score is not the probability that an answer is correct. Similar questions can require different answers when their constraints differ.\n\n## Storage and failure behavior\n\nCached entries contain the original question, answer, embedding, sources, suggestions, and a timestamp. The key is an MD5 hash of the lowercased and trimmed question. CACHE_TTL defaults to zero, meaning no expiration. A missing Redis connection or cache lookup error falls through to normal retrieval. The implementation limits the key lookup wait, but it does not place an overall deadline around every sequential GET.\n\n## Tradeoffs and proposed improvements\n\nScanning all cached keys makes lookup work grow with cache size. A future implementation could use indexed similarity search and explicit corpus versioning. These are proposed improvements, not claims about the current implementation. Existing cache keys do not include a selected document set or retrieval count.\n\nThe workbench intentionally performs fresh retrieval and generation on every investigation. Reusing this semantic cache could return an answer based on an excluded document and make an evidence comparison misleading. Replay reuses a captured event stream locally and is explicitly labeled; it is not a new live request.\n\n## Source references\n\nSee Lalu-Portfolio_Backend/src/services/cache.ts for key lookup, cosine similarity, thresholds, and persistence; see Lalu-Portfolio_Backend/src/routes/ask.ts for the cache branch in the RAG pipeline. No measured cost reduction is asserted by this document.\n"
+    },
+    {
+      "id": "webhook-design",
+      "title": "Webhook processing design",
+      "version": "1",
+      "kind": "sample",
+      "source": "Authored synthetic design; no production claims",
+      "content": "# Sample design: processing duplicate webhook deliveries\n\n## Status and assumptions\n\nThis document is a synthetic engineering example for the workbench. It is not a claim about a deployed customer system or a specific open-source contribution. The example provider can deliver the same event more than once, and queue workers can retry jobs after interruption.\n\n## Event identity and acceptance\n\nIdentify an event by the pair tenant_id and provider_event_id. Verify the provider signature before accepting the event. Insert the event into an inbox table with a unique constraint on that pair. A conflicting insert identifies a duplicate; acknowledge it without creating another logical job. Distinct tenants may legitimately have equal provider event IDs.\n\n## Durable scheduling\n\nWrite the inbox row and an outbox scheduling record in the same database transaction. A dispatcher publishes pending outbox records to the queue and records delivery. If publishing is repeated after a crash, the worker still uses the original event identity. An atomic database constraint protects concurrent arrivals; a separate check followed by an insert would leave a race.\n\n## Worker retries and external effects\n\nBefore applying a database change, a worker checks and updates durable processing state in the same transaction as that change. External effects require another boundary: pass a stable idempotency key to a provider that supports it. Without provider support or reconciliation, a timeout after an external effect can leave its outcome unknown. Inbox deduplication alone does not guarantee exactly-once external effects.\n\n## Verification strategy\n\nTest simultaneous duplicate deliveries, worker interruption before commit, queue redelivery, and timeout after an external effect. Assert that one logical event is accepted per tenant and provider event ID. The sample design has no production throughput or latency measurements.\n"
+    },
+    {
+      "id": "webhook-incident",
+      "title": "Duplicate-delivery incident",
+      "version": "1",
+      "kind": "sample",
+      "source": "Authored synthetic incident; no production claims",
+      "content": "# Sample incident: one event created two jobs\n\n## Status\n\nThis is a constructed incident for investigating evidence. All observations below belong to the sample scenario. They are not production metrics, a customer incident, or an account of the portfolio owner's employment.\n\n## Observed sequence\n\nAt 10:02:00, delivery A arrived for tenant atlas with provider event evt_104. At 10:02:01, the handler queued job job_701. Its acknowledgement was lost. At 10:02:05, the provider retried the same event; delivery B queued job job_702. Both jobs described the same underlying event, but the old implementation used a newly generated job ID as its only uniqueness check.\n\n## Diagnosis\n\nThe incident's evidence points to event identity being discarded at the enqueue boundary. Checking whether job_702 already existed could not detect job_701 as the same event. The missing invariant was uniqueness of tenant_id plus provider_event_id across deliveries. A queue job ID alone was insufficient in this sample implementation.\n\n## Remediation and observed verification\n\nThe sample patch persisted the original event identity in an inbox with a unique database constraint and created an outbox entry in the same transaction. In the constructed regression scenario, replaying both deliveries accepted one logical event and classified the second as a duplicate. This result concerns inbox acceptance only; external side effects still require their own idempotency strategy.\n\n## Missing evidence\n\nThe incident record contains no production p95 latency, financial loss estimate, or guarantee of exactly-once delivery. If asked for those values, an answer should explicitly state that the selected documents do not supply them. Removing this incident document also removes the concrete event ID, job IDs, and observed sequence from the available evidence.\n"
+    }
+  ],
+  "chunks": [
+    {
+      "id": "portfolio-rag-87-407",
+      "documentId": "portfolio-rag",
+      "heading": "Implementation observed in this repository",
+      "start": 87,
+      "end": 407,
+      "text": "The existing portfolio chat calls POST /api/ask-stream on an Express backend. The backend creates a 768-dimensional Gemini embedding for the visitor's question, checks a Redis semantic answer cache, and queries Pinecone when the cache misses. These are the implemented stages in Lalu-Portfolio_Backend/src/routes/ask.ts."
+    },
+    {
+      "id": "portfolio-rag-442-771",
+      "documentId": "portfolio-rag",
+      "heading": "Retrieval and answer context",
+      "start": 442,
+      "end": 771,
+      "text": "The Pinecone query asks for the top matching vectors and their metadata. The ingestion script creates separate records for projects, experience, personal details, and other résumé sections. This is section-based ingestion, not a general PDF parser. Each retrieved record contributes its metadata content to the generation prompt."
+    },
+    {
+      "id": "portfolio-rag-773-1121",
+      "documentId": "portfolio-rag",
+      "heading": "Retrieval and answer context",
+      "start": 773,
+      "end": 1121,
+      "text": "The existing chat also appends the full résumé JSON as fallback context. Consequently, its answer may use résumé facts beyond the displayed retrieval results. The document workbench uses a separate pipeline: only passages from the visitor's selected documents enter its prompt. Excluding a document removes it from retrieval and generation context."
+    },
+    {
+      "id": "portfolio-rag-1159-1527",
+      "documentId": "portfolio-rag",
+      "heading": "Streaming and provider behavior",
+      "start": 1159,
+      "end": 1527,
+      "text": "The existing Express route emits step_start and step_complete events around embedding, vector search, and generation. Generated text is sent as chunk events. A done event includes sources and suggested follow-up questions. If Gemini generation fails, the route tries OpenRouter. The current route labels the generation stage as Gemini even when that fallback executes."
+    },
+    {
+      "id": "portfolio-rag-1577-1922",
+      "documentId": "portfolio-rag",
+      "heading": "What this implementation does not establish",
+      "start": 1577,
+      "end": 1922,
+      "text": "The source code describes behavior, not a measured production benchmark. It does not establish retrieval precision, production latency percentiles, or availability guarantees. The workbench reports timings from each actual run. Its source links validate where excerpts came from; they do not automatically prove every generated claim is correct."
+    },
+    {
+      "id": "portfolio-rag-1946-2245",
+      "documentId": "portfolio-rag",
+      "heading": "Source references",
+      "start": 1946,
+      "end": 2245,
+      "text": "See Lalu-Portfolio_Backend/src/routes/ask.ts for request handling, Lalu-Portfolio_Backend/scripts/import_embeddings.ts for ingestion, and Lalu-Portfolio_Frontend/src/utils/avatarStore.ts for the existing streaming client. These paths refer to the repository snapshot used to prepare this collection."
+    },
+    {
+      "id": "portfolio-cache-65-440",
+      "documentId": "portfolio-cache",
+      "heading": "Implemented lookup",
+      "start": 65,
+      "end": 440,
+      "text": "The existing backend embeds the question before looking in Redis. The getCachedResponse function in Lalu-Portfolio_Backend/src/services/cache.ts reads keys matching cache:question:*, loads the cached question embeddings, and computes cosine similarity against each. The highest-scoring answer is reused when its score meets CACHE_SIMILARITY_THRESHOLD, which defaults to 0.92."
+    },
+    {
+      "id": "portfolio-cache-469-791",
+      "documentId": "portfolio-cache",
+      "heading": "What a cache hit saves",
+      "start": 469,
+      "end": 791,
+      "text": "A cache hit returns the stored answer, sources, and suggestions. It skips the new Pinecone retrieval and answer generation, but it does not skip question embedding. A retrieval similarity score is not the probability that an answer is correct. Similar questions can require different answers when their constraints differ."
+    },
+    {
+      "id": "portfolio-cache-826-1245",
+      "documentId": "portfolio-cache",
+      "heading": "Storage and failure behavior",
+      "start": 826,
+      "end": 1245,
+      "text": "Cached entries contain the original question, answer, embedding, sources, suggestions, and a timestamp. The key is an MD5 hash of the lowercased and trimmed question. CACHE_TTL defaults to zero, meaning no expiration. A missing Redis connection or cache lookup error falls through to normal retrieval. The implementation limits the key lookup wait, but it does not place an overall deadline around every sequential GET."
+    },
+    {
+      "id": "portfolio-cache-1287-1600",
+      "documentId": "portfolio-cache",
+      "heading": "Tradeoffs and proposed improvements",
+      "start": 1287,
+      "end": 1600,
+      "text": "Scanning all cached keys makes lookup work grow with cache size. A future implementation could use indexed similarity search and explicit corpus versioning. These are proposed improvements, not claims about the current implementation. Existing cache keys do not include a selected document set or retrieval count."
+    },
+    {
+      "id": "portfolio-cache-1602-1921",
+      "documentId": "portfolio-cache",
+      "heading": "Tradeoffs and proposed improvements",
+      "start": 1602,
+      "end": 1921,
+      "text": "The workbench intentionally performs fresh retrieval and generation on every investigation. Reusing this semantic cache could return an answer based on an excluded document and make an evidence comparison misleading. Replay reuses a captured event stream locally and is explicitly labeled; it is not a new live request."
+    },
+    {
+      "id": "portfolio-cache-1945-2201",
+      "documentId": "portfolio-cache",
+      "heading": "Source references",
+      "start": 1945,
+      "end": 2201,
+      "text": "See Lalu-Portfolio_Backend/src/services/cache.ts for key lookup, cosine similarity, thresholds, and persistence; see Lalu-Portfolio_Backend/src/routes/ask.ts for the cache branch in the RAG pipeline. No measured cost reduction is asserted by this document."
+    },
+    {
+      "id": "webhook-design-85-360",
+      "documentId": "webhook-design",
+      "heading": "Status and assumptions",
+      "start": 85,
+      "end": 360,
+      "text": "This document is a synthetic engineering example for the workbench. It is not a claim about a deployed customer system or a specific open-source contribution. The example provider can deliver the same event more than once, and queue workers can retry jobs after interruption."
+    },
+    {
+      "id": "webhook-design-396-755",
+      "documentId": "webhook-design",
+      "heading": "Event identity and acceptance",
+      "start": 396,
+      "end": 755,
+      "text": "Identify an event by the pair tenant_id and provider_event_id. Verify the provider signature before accepting the event. Insert the event into an inbox table with a unique constraint on that pair. A conflicting insert identifies a duplicate; acknowledge it without creating another logical job. Distinct tenants may legitimately have equal provider event IDs."
+    },
+    {
+      "id": "webhook-design-780-1157",
+      "documentId": "webhook-design",
+      "heading": "Durable scheduling",
+      "start": 780,
+      "end": 1157,
+      "text": "Write the inbox row and an outbox scheduling record in the same database transaction. A dispatcher publishes pending outbox records to the queue and records delivery. If publishing is repeated after a crash, the worker still uses the original event identity. An atomic database constraint protects concurrent arrivals; a separate check followed by an insert would leave a race."
+    },
+    {
+      "id": "webhook-design-1199-1617",
+      "documentId": "webhook-design",
+      "heading": "Worker retries and external effects",
+      "start": 1199,
+      "end": 1617,
+      "text": "Before applying a database change, a worker checks and updates durable processing state in the same transaction as that change. External effects require another boundary: pass a stable idempotency key to a provider that supports it. Without provider support or reconciliation, a timeout after an external effect can leave its outcome unknown. Inbox deduplication alone does not guarantee exactly-once external effects."
+    },
+    {
+      "id": "webhook-design-1645-1923",
+      "documentId": "webhook-design",
+      "heading": "Verification strategy",
+      "start": 1645,
+      "end": 1923,
+      "text": "Test simultaneous duplicate deliveries, worker interruption before commit, queue redelivery, and timeout after an external effect. Assert that one logical event is accepted per tenant and provider event ID. The sample design has no production throughput or latency measurements."
+    },
+    {
+      "id": "webhook-incident-58-275",
+      "documentId": "webhook-incident",
+      "heading": "Status",
+      "start": 58,
+      "end": 275,
+      "text": "This is a constructed incident for investigating evidence. All observations below belong to the sample scenario. They are not production metrics, a customer incident, or an account of the portfolio owner's employment."
+    },
+    {
+      "id": "webhook-incident-299-666",
+      "documentId": "webhook-incident",
+      "heading": "Observed sequence",
+      "start": 299,
+      "end": 666,
+      "text": "At 10:02:00, delivery A arrived for tenant atlas with provider event evt_104. At 10:02:01, the handler queued job job_701. Its acknowledgement was lost. At 10:02:05, the provider retried the same event; delivery B queued job job_702. Both jobs described the same underlying event, but the old implementation used a newly generated job ID as its only uniqueness check."
+    },
+    {
+      "id": "webhook-incident-682-1017",
+      "documentId": "webhook-incident",
+      "heading": "Diagnosis",
+      "start": 682,
+      "end": 1017,
+      "text": "The incident's evidence points to event identity being discarded at the enqueue boundary. Checking whether job_702 already existed could not detect job_701 as the same event. The missing invariant was uniqueness of tenant_id plus provider_event_id across deliveries. A queue job ID alone was insufficient in this sample implementation."
+    },
+    {
+      "id": "webhook-incident-1061-1461",
+      "documentId": "webhook-incident",
+      "heading": "Remediation and observed verification",
+      "start": 1061,
+      "end": 1461,
+      "text": "The sample patch persisted the original event identity in an inbox with a unique database constraint and created an outbox entry in the same transaction. In the constructed regression scenario, replaying both deliveries accepted one logical event and classified the second as a duplicate. This result concerns inbox acceptance only; external side effects still require their own idempotency strategy."
+    },
+    {
+      "id": "webhook-incident-1484-1840",
+      "documentId": "webhook-incident",
+      "heading": "Missing evidence",
+      "start": 1484,
+      "end": 1840,
+      "text": "The incident record contains no production p95 latency, financial loss estimate, or guarantee of exactly-once delivery. If asked for those values, an answer should explicitly state that the selected documents do not supply them. Removing this incident document also removes the concrete event ID, job IDs, and observed sequence from the available evidence."
+    }
+  ]
+}

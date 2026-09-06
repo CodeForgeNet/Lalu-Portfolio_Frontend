@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import resume from "@/data/resume.json";
 import { Terminal } from "lucide-react";
+import Link from "next/link";
 
 // Dynamically import Chat component to prevent hydration issues
 const Chat = dynamic(() => import("@/components/Chat"), { ssr: false });
@@ -24,6 +25,12 @@ export default function LabPage() {
             Live RAG pipeline demo, open experiments, and published tools.
           </p>
         </div>
+
+        <Link href="/lab/documents" className="block mb-10 rounded-lg border border-border bg-surface p-6 hover:border-text-muted transition-colors">
+          <span className="text-xs text-text-muted">INTERACTIVE WORKBENCH</span>
+          <h2 className="text-xl font-medium mt-2 mb-2">Document investigation ↗</h2>
+          <p className="text-sm text-text-muted">Ask a question, inspect the evidence, and compare how the answer changes when you exclude a document. Live execution, source citations, and replay.</p>
+        </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
           
