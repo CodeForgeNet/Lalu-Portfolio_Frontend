@@ -1,6 +1,0 @@
-[
-  { "id": "portfolio-rag", "title": "Portfolio RAG implementation", "version": "1", "kind": "implementation", "source": "Lalu-Portfolio_Backend/src/routes/ask.ts" },
-  { "id": "portfolio-cache", "title": "Portfolio cache and tradeoffs", "version": "1", "kind": "implementation", "source": "Lalu-Portfolio_Backend/src/services/cache.ts" },
-  { "id": "webhook-design", "title": "Webhook processing design", "version": "1", "kind": "sample", "source": "Authored synthetic design; no production claims" },
-  { "id": "webhook-incident", "title": "Duplicate-delivery incident", "version": "1", "kind": "sample", "source": "Authored synthetic incident; no production claims" }
-]

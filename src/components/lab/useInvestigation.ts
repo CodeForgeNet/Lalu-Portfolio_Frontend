@@ -29,7 +29,7 @@ export function useInvestigation() {
     if (abortRef.current) return;
     const abort = new AbortController();
     abortRef.current = abort;
-    const timeout = setTimeout(() => abort.abort(new DOMException("Run deadline reached", "TimeoutError")), 45000);
+    const timeout = setTimeout(() => abort.abort(new DOMException("Run deadline reached", "TimeoutError")), 90000);
     setBusy(true); setError(""); setRun(null); setReplay(null); setPlaying(false);
     let current: Run | null = null;
     try {
@@ -50,7 +50,7 @@ export function useInvestigation() {
       if (current.status === "complete") setHistory(previous => [current!, ...previous].slice(0, 8));
     } catch (cause) {
       const timedOut = abort.signal.reason?.name === "TimeoutError";
-      const message = abort.signal.aborted ? timedOut ? "This run reached its 45-second deadline. Retry or explore the recorded run." : "Run cancelled." : cause instanceof Error ? cause.message : "The investigation could not finish.";
+      const message = abort.signal.aborted ? timedOut ? "This run reached its 90-second deadline. Retry or explore the recorded run." : "Run cancelled." : cause instanceof Error ? cause.message : "The investigation could not finish.";
       current = interruptRun(current, message, abort.signal.aborted && !timedOut);
       setRun(current); setError(message);
     } finally {

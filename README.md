@@ -99,17 +99,17 @@ npm install
 
 ### 2. Environment Variables
 
-Create a `.env.local` file in the `apps/frontend` directory. This file is used to point to your backend API.
+Create a `.env.local` file in the frontend directory. These values are read only by the Next.js server proxy and are never included in browser JavaScript.
 
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env.local
 ```
 
 If your backend is running locally on port 8080, the file should contain:
 
 ```
-NEXT_PUBLIC_API_BASE=http://localhost:8080
-NEXT_PUBLIC_API_SECRET_KEY=... # Optional: If you have API protection enabled
+BACKEND_API_BASE=http://localhost:8080
+BACKEND_API_SECRET_KEY=... # Must match API_SECRET_KEY in the backend
 ```
 
 If your backend is deployed, replace the URL with your production API endpoint.
@@ -128,4 +128,4 @@ This will start the application, typically on `http://localhost:3000`.
 
 This Next.js application is optimized for deployment on [Vercel](https://vercel.com/). Simply connect your Git repository to a Vercel project. 
 
-Remember to set the `NEXT_PUBLIC_API_BASE` environment variable in your Vercel project settings to point to your deployed backend API URL.
+Set `BACKEND_API_BASE` and `BACKEND_API_SECRET_KEY` in the Vercel project settings. Do not use a `NEXT_PUBLIC_` prefix for either value.

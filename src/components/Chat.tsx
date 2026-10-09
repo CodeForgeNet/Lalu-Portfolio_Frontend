@@ -4,9 +4,8 @@ import React, { useEffect, useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Components } from "react-markdown";
-import useAvatarStore from "@/utils/avatarStore";
+import useChatStore from "@/utils/chatStore";
 import PipelineTrace from "./PipelineTrace";
-import AvatarScene from "./AvatarScene";
 import { Send, Terminal } from "lucide-react";
 
 type Message = {
@@ -36,7 +35,7 @@ export default function Chat() {
     fetchInitialSuggestions,
     submitQuery,
     isQuotaExceeded,
-  } = useAvatarStore();
+  } = useChatStore();
 
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -94,7 +93,6 @@ export default function Chat() {
               if (e.key === "Enter") handleSend();
             }}
             disabled={chatLoading || isQuotaExceeded}
-            autoFocus
           />
           <button 
             onClick={handleSend}
@@ -167,23 +165,22 @@ export default function Chat() {
                 {suggestions.length > 0 && (
                   <div>
                     <div className="text-text-muted mb-1 text-xs">SUGGEST</div>
-                    <div className="flex flex-col gap-1">
-                      {suggestions.map((s: string, idx: number) => (
+                    <div className="flex flex-col gap-2 mt-2">
+                      {suggestions.map((s: string, idx: number) => {
+                        const isHeading = idx === 0 && (s.toLowerCase().includes('here are') || !s.endsWith('?'));
+                        return (
                         <button
                           key={idx}
-                          onClick={() => submitQuery(s)}
-                          className="text-left text-sm text-text hover:text-accent transition-colors truncate"
+                          onClick={() => !isHeading && submitQuery(s)}
+                          className={`text-left text-sm text-text whitespace-normal flex items-start gap-2 ${isHeading ? 'cursor-default opacity-70' : 'cursor-pointer hover:text-accent transition-colors'}`}
                         >
-                          {s}
+                          {!isHeading && <span className="text-accent shrink-0">-</span>}
+                          <span>{s}</span>
                         </button>
-                      ))}
+                      )})}
                     </div>
                   </div>
                 )}
-              </div>
-              
-              <div className="shrink-0">
-                <AvatarScene />
               </div>
             </div>
           )}

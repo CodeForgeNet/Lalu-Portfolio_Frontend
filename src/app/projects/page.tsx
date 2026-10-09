@@ -26,10 +26,11 @@ export default function ProjectsPage() {
   };
 
   return (
-    <main className="min-h-screen relative bg-bg font-sans">
+    <main className="technical-page min-h-screen bg-bg font-sans">
       <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-12 md:py-24">
         
         <div className="flex flex-col gap-6 mb-12">
+          <div className="flex items-center gap-3 telemetry-label text-accent"><span className="status-dot" aria-hidden="true" />Production portfolio</div>
           <h1 className="text-4xl md:text-5xl font-medium text-text">Selected Work</h1>
           <p className="text-text-muted max-w-2xl text-lg">
             Production AI pipelines, agentic workflows, and full-stack applications.
@@ -87,10 +88,10 @@ export default function ProjectsPage() {
                         </h3>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-mono text-accent bg-accent/10 px-2 py-1 rounded border border-accent/20 uppercase">
+                        <span className="telemetry-label text-accent bg-accent/10 px-2 py-1 border border-accent/20">
                           {getCategoryLabel(project.category)}
                         </span>
-                        <span className="text-xs font-mono text-text-muted bg-surface-2 px-2 py-1 rounded">
+                        <span className="telemetry-label bg-surface-2 px-2 py-1">
                           {project.year}
                         </span>
                       </div>
@@ -113,11 +114,12 @@ export default function ProjectsPage() {
                       {/* Architecture Diagram (Large cards only) */}
                       {isLarge && project.architecture && project.architecture.length > 0 && (
                         <div className="bg-surface-2 border border-border rounded p-4 flex flex-col gap-3 font-mono text-xs">
-                          <div className="text-text-muted mb-1">ARCHITECTURE</div>
+                          <div className="telemetry-label mb-1 text-text-muted">Architecture / execution path</div>
                           <div className="flex flex-col gap-2">
                             {project.architecture.map((step, idx) => (
                               <div key={idx} className="flex flex-col items-center">
-                                <div className="w-full bg-surface border border-border px-3 py-2 rounded text-center text-text shadow-sm">
+                                <div className="w-full bg-surface border border-border px-3 py-2 text-center text-text shadow-sm">
+                                  <span className="mr-2 text-accent/60">{String(idx + 1).padStart(2, "0")}</span>
                                   {step}
                                 </div>
                                 {idx < project.architecture.length - 1 && (

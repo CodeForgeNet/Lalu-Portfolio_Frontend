@@ -7,8 +7,6 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "lab:prepare": "node scripts/lab-corpus.ts",
-    "lab:setup": "node --env-file-if-exists=.env.local scripts/lab-setup.ts",
     "test:lab": "node --test tests/lab/*.test.ts"
   },
   "dependencies": {

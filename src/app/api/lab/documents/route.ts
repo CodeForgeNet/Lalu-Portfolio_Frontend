@@ -1,5 +1,5 @@
-import { corpus } from "@/lib/lab/server";
+import { proxyToBackend } from "@/lib/backendProxy";
 
-export function GET() {
-  return Response.json(corpus, { headers: { "Cache-Control": "public, max-age=0, must-revalidate" } });
+export function GET(request: Request) {
+  return proxyToBackend(request, "/api/lab/documents");
 }

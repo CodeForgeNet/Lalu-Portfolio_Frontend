@@ -21,7 +21,7 @@ export default function AboutPage() {
   };
 
   return (
-    <main className="min-h-screen relative bg-bg font-sans pb-24">
+    <main className="technical-page min-h-screen bg-bg font-sans pb-24">
       <div className="max-w-[800px] mx-auto px-6 md:px-12 py-12 md:py-24 flex flex-col gap-24">
         
         {/* Header Section */}
@@ -32,6 +32,7 @@ export default function AboutPage() {
             transition={{ duration: 0.6 }}
             className="flex flex-col gap-6"
           >
+            <div className="telemetry-label flex items-center gap-2 text-accent"><span className="status-dot" aria-hidden="true" />Operational history</div>
             <h1 className="text-4xl md:text-5xl font-medium text-text">Background</h1>
             <p className="text-lg text-text-muted leading-relaxed">
               {resume.summary}
@@ -65,7 +66,7 @@ export default function AboutPage() {
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8">
                   {/* Left Column: Date & Meta */}
                   <div className="md:col-span-3 flex flex-col gap-1 md:text-right md:pt-1">
-                    <div className="font-mono text-sm text-text">{exp.duration}</div>
+                    <div className="telemetry-label text-text">{exp.duration}</div>
                     <div className="text-xs text-text-muted">{exp.location}</div>
                   </div>
 
@@ -79,6 +80,7 @@ export default function AboutPage() {
                     <div className="hidden md:block absolute -left-4 top-6 bottom-[-64px] w-px bg-border" />
 
                     <div className="flex flex-col">
+                      <div className="telemetry-label mb-2 text-text-muted">Deployment / experience node</div>
                       <h3 className="text-xl font-medium text-text">{exp.title}</h3>
                       <div className="text-accent">{exp.organization}</div>
                     </div>
@@ -113,11 +115,12 @@ export default function AboutPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="bg-surface border border-border rounded-lg p-6 flex flex-col gap-4"
+                className="bg-surface border border-border p-6 flex flex-col gap-4 transition-colors hover:border-accent/30"
               >
                 <div className="flex items-center gap-2 text-text font-medium border-b border-border/50 pb-2">
                   {getCategoryIcon(category)}
                   {formatCategoryName(category)}
+                  <span className="ml-auto telemetry-label text-text-muted">Capability module</span>
                 </div>
                 
                 <div className="flex flex-wrap gap-2">

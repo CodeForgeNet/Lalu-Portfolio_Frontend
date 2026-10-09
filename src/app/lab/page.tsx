@@ -16,18 +16,19 @@ export default function LabPage() {
   const activeExperiment = resume.projects.find(p => p.id === "vaniops");
 
   return (
-    <main className="min-h-screen relative bg-bg font-sans">
+    <main className="technical-page min-h-screen bg-bg font-sans">
       <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-12 md:py-24">
         
         <div className="flex flex-col gap-6 mb-12">
+          <div className="telemetry-label flex items-center gap-2 text-success"><span className="status-dot" aria-hidden="true" />Active research surface</div>
           <h1 className="text-4xl md:text-5xl font-medium text-text">The Lab</h1>
           <p className="text-text-muted max-w-2xl text-lg">
             Live RAG pipeline demo, open experiments, and published tools.
           </p>
         </div>
 
-        <Link href="/lab/documents" className="block mb-10 rounded-lg border border-border bg-surface p-6 hover:border-text-muted transition-colors">
-          <span className="text-xs text-text-muted">INTERACTIVE WORKBENCH</span>
+        <Link href="/lab/documents" className="group block mb-10 rounded-lg border border-success/30 bg-surface p-6 hover:border-success/60 transition-colors">
+          <div className="flex flex-wrap items-center gap-3 telemetry-label text-success"><span className="status-dot" aria-hidden="true" />Interactive workbench <span className="text-text-muted">/ Live execution</span></div>
           <h2 className="text-xl font-medium mt-2 mb-2">Document investigation ↗</h2>
           <p className="text-sm text-text-muted">Ask a question, inspect the evidence, and compare how the answer changes when you exclude a document. Live execution, source citations, and replay.</p>
         </Link>

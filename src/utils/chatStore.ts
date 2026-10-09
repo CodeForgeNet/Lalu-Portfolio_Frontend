@@ -25,7 +25,7 @@ type Source = {
   title?: string;
 };
 
-type SpeechHandler = ((text: string) => Promise<string>) | null;
+
 
 // Interface for expected backend error response
 interface BackendErrorResponse {
@@ -33,16 +33,8 @@ interface BackendErrorResponse {
   message?: string;
 }
 
-interface AvatarStore {
-  // Avatar speech state
-  isSpeaking: boolean;
-  currentAudioDataUri: string | null;
-  speechHandler: SpeechHandler;
-  setIsSpeaking: (speaking: boolean) => void;
-  setCurrentAudioDataUri: (uri: string | null) => void;
-  setSpeechHandler: (handler: SpeechHandler) => void;
-  generateSpeech: (text: string) => Promise<string | null>;
-  stopSpeaking: () => void;
+interface ChatStore {
+
 
   // Chat state
   messages: Message[];
@@ -54,16 +46,12 @@ interface AvatarStore {
   setMessages: (messages: Message[]) => void;
   isQuotaExceeded: boolean; // New state for quota
 
-  // Voice input state
-  isListening: boolean;
-  isProcessingVerbalQuery: boolean; // New state
-  setIsListening: (isListening: boolean) => void;
+
 
   // Functions
   fetchInitialSuggestions: () => Promise<void>;
   setSuggestionSource: (src: string | null) => void;
   submitQuery: (text: string) => Promise<void>;
-  submitVerbalQuery: (text: string) => Promise<void>;
 }
 
 // Type guard to check if an error is an AxiosError
@@ -71,13 +59,8 @@ function isAxiosError(error: unknown): error is AxiosError {
   return (error as AxiosError).isAxiosError !== undefined;
 }
 
-const store: StateCreator<AvatarStore> = (set, get) => ({
+const store: StateCreator<ChatStore> = (set, get) => ({
   // --- Initial State ---
-  isSpeaking: false,
-  isListening: false,
-  isProcessingVerbalQuery: false, // Initialize new state
-  currentAudioDataUri: null,
-  speechHandler: null,
   messages: [
     {
       role: "system",
@@ -93,55 +76,15 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
   isQuotaExceeded: false, // Initialize new state
 
   // --- Mutators ---
-  setIsSpeaking: (speaking) => set({ isSpeaking: speaking }),
-  setIsListening: (isListening) => set({ isListening }),
-  setCurrentAudioDataUri: (uri) => set({ currentAudioDataUri: uri }),
-  setSpeechHandler: (handler) => set({ speechHandler: handler }),
   setMessages: (messages) => set({ messages }),
   // optional: set suggestion source
   setSuggestionSource: (src: string | null) => set({ suggestionSource: src }),
 
-  stopSpeaking: () => {
-    set({ isSpeaking: false, currentAudioDataUri: null });
-  },
 
-  // --- Async Functions ---
-  generateSpeech: async (text) => {
-    const { speechHandler } = get();
-    if (!speechHandler) {
-      console.error("Speech handler not registered");
-      return null;
-    }
-    try {
-      // Remove markdown asterisks before sending to speech handler
-      const cleanText = text.replace(/\*/g, ""); // Remove all asterisks
-      const audioDataUri = await speechHandler(cleanText);
-      set({
-        currentAudioDataUri: audioDataUri,
-        isProcessingVerbalQuery: false,
-      }); // Set to false here
-      return audioDataUri;
-    } catch (error: unknown) {
-      // Changed to unknown
-      console.error("Error generating speech:", error);
-      set({ isProcessingVerbalQuery: false });
-      return null;
-    }
-  },
 
   fetchInitialSuggestions: async () => {
     try {
-      const res = await axios.post(
-        `${
-          process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"
-        }/api/suggest`,
-        {},
-        {
-          headers: {
-            "x-api-key": process.env.NEXT_PUBLIC_API_SECRET_KEY,
-          },
-        }
-      );
+      const res = await axios.post("/api/suggest", {});
 
       set({
         suggestions: res.data?.suggestions || [],
@@ -190,17 +133,13 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
     }));
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"}/api/ask-stream`,
-        {
+      const response = await fetch("/api/ask-stream", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "x-api-key": process.env.NEXT_PUBLIC_API_SECRET_KEY || "",
           },
           body: JSON.stringify({ question: text, topK: 3 }),
-        }
-      );
+        });
 
       if (!response.ok) {
         if (response.status === 429) {
@@ -297,60 +236,8 @@ const store: StateCreator<AvatarStore> = (set, get) => ({
       set((state) => ({ messages: [...state.messages, errMsg], chatLoading: false }));
     }
   },
-
-  submitVerbalQuery: async (text: string) => {
-    if (!text.trim()) return;
-
-    const { generateSpeech } = get();
-    set({ isProcessingVerbalQuery: true }); // Set to true here
-
-    try {
-      const res = await axios.post(
-        `${
-          process.env.NEXT_PUBLIC_API_BASE || "http://localhost:8080"
-        }/api/ask`,
-        {
-          question: text,
-          topK: 3,
-        },
-        {
-          headers: {
-            "x-api-key": process.env.NEXT_PUBLIC_API_SECRET_KEY,
-          },
-        }
-      );
-
-      const assistantText =
-        res.data?.text || "Sorry, I had an issue processing that.";
-
-      // Trigger TTS for the response
-      generateSpeech(assistantText);
-    } catch (err: unknown) {
-      // Changed to unknown
-      if (isAxiosError(err) && err.response) {
-        const data = err.response.data as BackendErrorResponse | undefined;
-        if (data?.error === "QUOTA_EXCEEDED") {
-          set({ isQuotaExceeded: true });
-          generateSpeech("The daily API quota has been reached.");
-        } else {
-          const message = isAxiosError(err)
-            ? err.message
-            : "An unknown error occurred";
-          // Optional: decide if you want verbal error feedback
-          generateSpeech(`Error: ${message}`);
-        }
-      } else {
-        const message = isAxiosError(err)
-          ? err.message
-          : "An unknown error occurred";
-        generateSpeech(`Error: ${message}`);
-      }
-    } finally {
-      set({ loading: false }); // Only set loading to false here
-    }
-  },
 });
 
-const useAvatarStore = create<AvatarStore>(store);
+const useChatStore = create<ChatStore>(store);
 
-export default useAvatarStore;
+export default useChatStore;

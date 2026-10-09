@@ -9,7 +9,7 @@
   "github": "https://github.com/CodeForgeNet",
   "linkedin": "https://www.linkedin.com/in/lalu-kumar/",
   "portfolio": "https://lalu-portfolio.vercel.app/",
-  "summary": "Full Stack & AI Engineer with production RAG pipelines, multi-agent systems, and AI voice infrastructure. Merged PRs into OpenClaw (330k stars) and Anthropic's MCP servers; shipped TunePrompt (800+ npm installs) and Genesis Forge (700+ downloads).",
+  "summary": "Full Stack & AI Engineer: biologically-inspired computer vision (NeuroSight - 100% directional accuracy, sub-100MB runtime memory), production RAG systems (98.5% retrieval precision), and multi-agent orchestration. Shipped 3 PyPI packages (TunePrompt, Genesis Forge, NeuroSight); merged critical fixes to OpenClaw (330k stars) and Anthropic MCP servers.",
   "personal_details": {
     "hobbies": [
       "Watching anime",
@@ -110,6 +110,19 @@
     }
   ],
   "projects": [
+    {
+      "id": "neurosight",
+      "title": "NeuroSight – Biologically-Inspired Motion Detection",
+      "category": "open-source-tool",
+      "year": "2026",
+      "status": "live",
+      "summary": "Built and published NeuroSight (PyPI), a biologically-accurate motion detector modeled on the Drosophila (fruit fly brain) visual system.",
+      "content": "Reverse-engineered T4/T5 connectome weights from Janelia connectome databases into a Hassenstein-Reichardt correlator, achieving 100% directional accuracy on synthetic benchmarks and 64+ FPS on CPU-only (no GPU/ML models). Shipped 36 unit tests with 100% cardinal direction coverage, robotics-ready abstractions (looming detection, time-to-contact estimation, collision-avoidance steering), and streaming video I/O—achieving sub-100MB runtime memory (50-100MB across CPU/RPi/phone targets vs. 1GB+ for traditional optical flow), enabling edge deployment on Raspberry Pi, mobile, and drone platforms; designed as an explainable, ML-free alternative to black-box optical flow for robotics and computer vision education.",
+      "key_metric": "100% directional accuracy, sub-100MB runtime memory",
+      "architecture": ["Connectome Weights", "Hassenstein-Reichardt correlator", "Streaming Video I/O", "Looming Detection"],
+      "technologies": ["Python", "NumPy", "OpenCV", "PyPI"],
+      "links": { "github": "https://github.com/CodeForgeNet/neurosight" }
+    },
     {
       "id": "vaniops",
       "title": "VaniOps – AI Voice Calling SaaS",

@@ -35,9 +35,9 @@ export type EventPayload =
   | { type: "start"; settings: RunSettings; corpusVersion: string; startedAt: string; embeddingModel: string; generationModel: string }
   | { type: "stage"; stage: Stage }
   | { type: "sources"; passages: Passage[] }
-  | { type: "delta"; text: string }
+  | { type: "delta"; text: string; generationModel?: string }
   | { type: "done"; citations: Citation[]; warnings: string[]; usage?: Usage; totalDurationMs: number; generationModel: string }
-  | { type: "error"; message: string; status: "failed" | "cancelled"; origin: "server" | "client" };
+  | { type: "error"; message: string; status: "failed" | "cancelled"; origin: "server" | "client"; generationModel?: string };
 export type RunEvent = EventPayload & { runId: string; sequence: number; elapsedMs: number };
 
 export type Run = {

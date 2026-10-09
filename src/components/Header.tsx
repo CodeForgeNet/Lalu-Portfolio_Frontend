@@ -29,7 +29,7 @@ export default function Header() {
     <header className={`sticky top-0 z-50 bg-bg/80 backdrop-blur-md transition-colors duration-300 ${scrolled ? 'border-b border-border' : ''}`}>
       <nav className="max-w-[1200px] mx-auto px-6 md:px-12 flex items-center justify-between h-16">
         <div className="flex items-center">
-          <Link href="/" className="group flex items-center gap-2">
+          <Link href="/" className="group flex items-center gap-3">
             <span className="font-mono font-medium text-text group-hover:text-accent transition-colors">LK·</span>
           </Link>
         </div>

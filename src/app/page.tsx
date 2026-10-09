@@ -16,19 +16,19 @@ export default function Home() {
     .slice(0, 3);
 
   return (
-    <main className="min-h-screen relative bg-bg">
+    <main className="technical-page min-h-screen bg-bg">
       <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-12 md:py-24 flex flex-col gap-24">
         
         {/* Section A: Hero */}
-        <section className="flex flex-col gap-8">
+        <section className="hero-field flex flex-col gap-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="flex flex-col gap-6 max-w-3xl"
           >
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-mono text-accent border border-accent/20 bg-accent/5 px-2 py-1 rounded">
+            <div className="flex flex-wrap items-center gap-3">
+              <span className="telemetry-label flex items-center border border-border px-3 py-1 text-text rounded-sm">
                 OPEN TO WORK
               </span>
               <span className="text-xs font-mono text-text-muted">
@@ -44,6 +44,13 @@ export default function Home() {
             <p className="text-lg md:text-xl text-text-muted leading-relaxed max-w-2xl">
               Architecting autonomous agents, scalable RAG architectures, and production-grade AI infrastructure.<span className="animate-blink inline-block w-2 h-5 bg-accent ml-1 align-middle"></span>
             </p>
+
+            <div className="flex flex-wrap gap-x-5 gap-y-2 telemetry-label text-text-muted">
+              <span>Production systems</span>
+              <span>RAG</span>
+              <span>Agents</span>
+              <span>Infrastructure</span>
+            </div>
 
             <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm font-mono text-text-muted mt-2">
               {resume.open_source?.[0] && (
@@ -69,6 +76,7 @@ export default function Home() {
           </motion.div>
         </section>
 
+
         {/* Section B: Featured Lab Workbench */}
         <section>
           <Link href="/lab/documents" className="group block">
@@ -82,11 +90,11 @@ export default function Home() {
               <div className="pointer-events-none absolute -right-24 -top-28 h-64 w-64 rounded-full bg-accent/10 blur-3xl transition-opacity duration-300 group-hover:opacity-80" />
               <div className="relative flex flex-col gap-8 md:flex-row md:items-end md:justify-between">
                 <div className="max-w-2xl">
-                  <div className="mb-5 flex items-center gap-3 text-xs font-mono uppercase tracking-[0.18em] text-accent">
-                    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-accent/20 bg-accent/10">
+                  <div className="mb-5 flex items-center gap-3 telemetry-label text-text-muted">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white/5">
                       <ScanSearch size={15} />
                     </span>
-                    Featured in the Lab
+                    <span>FEATURED IN THE LAB</span>
                   </div>
                   <h2 className="text-2xl font-medium tracking-tight text-text md:text-3xl">
                     Investigate the answer, not just the output.
