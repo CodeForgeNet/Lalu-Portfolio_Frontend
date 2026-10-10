@@ -7,7 +7,9 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "test:lab": "node --test tests/lab/*.test.ts"
+    "test:lab": "node --test tests/lab/*.test.ts",
+    "test:chat": "node --test tests/chat/*.test.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@tailwindcss/typography": "^0.5.19",

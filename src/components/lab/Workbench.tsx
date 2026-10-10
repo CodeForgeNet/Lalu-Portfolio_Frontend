@@ -16,7 +16,7 @@ const questions = [
   "What was the production p95 latency during the sample incident?",
 ];
 
-export default function Workbench({ corpus, recorded }: { corpus: Corpus; recorded: Run | null }) {
+export default function Workbench({ corpus, recorded, offline = false }: { corpus: Corpus; recorded: Run | null; offline?: boolean }) {
   const investigation = useInvestigation();
   const { displayed, busy, replay } = investigation;
   const [documentIds, setDocumentIds] = useState(corpus.documents.map(d => d.id));
@@ -37,13 +37,14 @@ export default function Workbench({ corpus, recorded }: { corpus: Corpus; record
   function runInvestigation() { setHighlight(null); setTab("investigation"); void investigation.start({ question, documentIds, topK }); }
   const completed = displayed?.status === "complete" ? displayed : null;
 
-  return <main className={styles.workbench}>
+  return <main id="main-content" tabIndex={-1} className={styles.workbench}>
     <Link href="/lab" className={styles.back}><ArrowLeft size={14} /> Back to the Lab</Link>
     <header className={styles.header}>
       <div><span className={styles.eyebrow}>Document investigation · Engineering workbench</span><h1>Follow the evidence.</h1><p>Ask a question. Inspect its sources. Change the evidence and compare what happens.</p></div>
       {recorded && <button className={styles.button} disabled={busy} onClick={() => { investigation.startReplay(recorded, true); setTab("investigation"); }}><Play size={14} /> Explore a recorded run</button>}
     </header>
 
+    {offline && <p className={styles.status} role="status">The live backend is unavailable. You can read the bundled documents and explore the recorded run. Live investigation will be available when the backend reconnects.</p>}
     <details className={styles.how}>
       <summary>How this works & document preparation</summary>
       <p>These four Markdown documents were prepared before you arrived: split by headings and paragraphs, embedded, and indexed in a separate collection. Long passages use 400-word windows with 60 words of overlap. Source offsets point back to the original text.</p>
@@ -75,13 +76,13 @@ export default function Workbench({ corpus, recorded }: { corpus: Corpus; record
           <textarea id="investigation-question" value={question} maxLength={1500} rows={3} disabled={busy} onChange={event => setQuestion(event.target.value)} />
           <div className={styles.formActions}>
             <label htmlFor="retrieval-count">Retrieve <select id="retrieval-count" value={topK} disabled={busy} onChange={event => setTopK(Number(event.target.value) as RunSettings["topK"])}>{[2, 4, 6].map(count => <option key={count} value={count}>{count}</option>)}</select> passages</label>
-            {busy ? <button type="button" className={styles.button} onClick={investigation.cancel}><Square size={13} /> Cancel run</button> : <button className={`${styles.button} ${styles.primary}`} disabled={!question.trim() || !documentIds.length}>Run investigation <ArrowUpRight size={16} /></button>}
+            {busy ? <button type="button" className={styles.button} onClick={investigation.cancel}><Square size={13} /> Cancel run</button> : <button className={`${styles.button} ${styles.primary}`} disabled={offline || !question.trim() || !documentIds.length}>Run investigation <ArrowUpRight size={16} /></button>}
           </div>
           {!documentIds.length && <p className={styles.warning}>Select at least one document to run an investigation.</p>}
           <div className={styles.suggestions} aria-label="Suggested questions">{questions.map((q, index) => <button key={q} type="button" disabled={busy} onClick={() => setQuestion(q)}>{index === 0 ? "Investigate duplicate jobs" : index === 1 ? "Explain the cache" : "Try missing evidence"}</button>)}</div>
         </form>
 
-        <div className={styles.status} role="status" aria-live="polite">{replay ? `${replay.recorded ? "Recorded replay" : "Replay"} · ${new Date(replay.original.startedAt).toLocaleString()} · no new AI request` : busy ? "Live run in progress. Stages update from server events." : displayed ? `Run ${displayed.status}.` : "Ready · Every live run uses fresh retrieval and generation."}</div>
+        <div className={styles.status} role="status" aria-live="polite">{replay ? `${replay.recorded ? "Recorded replay" : "Replay"} · ${new Date(replay.original.startedAt).toLocaleString()} · no new AI request` : busy ? "Live run in progress. Stages update from server events." : displayed ? `Run ${displayed.status}.` : offline ? "Offline · Bundled documents and recorded replay are available." : "Ready · Every live run uses fresh retrieval and generation."}</div>
         {investigation.error && !displayed?.error && <p role="alert" className={styles.error}>{investigation.error}</p>}
 
         {replay && <div className={styles.replayControls}>

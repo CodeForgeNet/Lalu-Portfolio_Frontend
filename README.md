@@ -1,131 +1,47 @@
-# Lalu Portfolio - Frontend
+# Lalu Kumar — Applied AI Systems Lab
 
-This is the frontend for the AI-powered portfolio, built with Next.js, React, and TypeScript. It provides an interactive and visually engaging user interface for visitors to learn about Lalu Kumar and chat with his AI twin.
+Next.js App Router portfolio with static engineering case studies, a streaming AI assistant, and an evidence investigation workbench. React 19, TypeScript, Tailwind CSS 4, and Zustand; no new runtime dependencies were introduced for the redesign.
 
-## Features
+## Run locally
 
-- **Interactive 3D Avatar**: A Ready Player Me avatar, animated using React Three Fiber, that lip-syncs to the AI's spoken responses.
-- **AI Chat Interface**: A familiar chat UI where users can type questions and receive answers from the AI.
-- **Verbal Questions**: Users can click a button to ask questions verbally using their microphone, powered by the browser's Speech Recognition API.
-- **Text-to-Speech (TTS)**: The AI's responses are converted to audio and played back, creating a conversational experience.
-- **Dynamic Suggestions**: The UI provides conversation-starting questions and relevant follow-ups.
-- **Responsive Design**: A modern and responsive layout styled with Tailwind CSS.
+Use a current Node.js version supported by the installed Next.js release. The existing TypeScript tests use Node's native type stripping (validated with Node 25.6.1).
 
-## Tech Stack
-
-- **Framework**: [Next.js](https://nextjs.org/) (React)
-- **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **3D Graphics**: [React Three Fiber](https://docs.pmnd.rs/react-three-fiber/getting-started/introduction) & [Drei](https://github.com/pmndrs/drei)
-- **State Management**: [Zustand](https://github.com/pmndrs/zustand)
-- **API Communication**: [Axios](https://axios-http.com/)
-
-## Project Structure
-
-```
-apps/frontend/
-├── src/
-│   ├── app/                # Next.js App Router
-│   │   ├── page.tsx        # Main entry point, handles layout and "Ask Verbally" logic
-│   │   └── layout.tsx      # Global layout wrapper
-│   ├── components/         # Reusable React components
-│   │   ├── Avatar.tsx      # 3D avatar model, animation, and lip-sync logic
-│   │   ├── AvatarScene.tsx # Canvas setup for the 3D avatar
-│   │   └── Chat.tsx        # Main chat interface, handles message history and suggestions
-│   ├── data/
-│   │   └── resume.json     # Local copy of resume data for display
-│   └── utils/
-│       ├── avatarStore.ts  # Global Zustand store for chat and avatar state
-│       └── useSpeechRecognition.ts # Custom hook for browser Speech Recognition API
-├── public/
-│   ├── models/avatar.glb   # The 3D model for the avatar
-│   └── ...                 # Static assets
-├── .env.local.example      # Example environment variables
-├── next.config.ts          # Next.js configuration
-├── package.json            # Project dependencies and scripts
-└── tailwind.config.ts      # Tailwind CSS configuration
-```
-
-## Key Components & State Management
-
-### State Management (Zustand)
-
-The application uses **Zustand** for global state management, centralized in `src/utils/avatarStore.ts`.
-
-- **`useAvatarStore`**: Handles the core application state:
-  - **Chat State**: Stores message history (`messages`), loading states (`chatLoading`), and suggestions.
-  - **Avatar State**: Controls speaking status (`isSpeaking`), audio data (`currentAudioDataUri`), and lip-sync synchronization.
-  - **Speech State**: Manages verbal query processing (`isProcessingVerbalQuery`).
-  - **API Integration**: Contains actions to fetch suggestions (`fetchInitialSuggestions`) and submit queries (`submitQuery`, `submitVerbalQuery`).
-
-### Key Components
-
-- **`Avatar.tsx`**:
-  - Renders the 3D Ready Player Me avatar.
-  - Manages facial morph targets (visemes) for lip-syncing based on audio input.
-  - Handles idle and talking animations.
-
-- **`Chat.tsx`**:
-  - Displays the conversation history with markdown support.
-  - Renders suggested questions and source citations.
-  - Handles text input and submission.
-
-- **`page.tsx`**:
-  - The main landing page that composes the UI.
-  - Orchestrates the "Ask Verbally" feature using `useSpeechRecognition`.
-  - Manages the dynamic state of the main action button (Listening, Processing, Stop Replying).
-
-### Hooks
-
-- **`useSpeechRecognition.ts`**:
-  - A custom hook that wraps the browser's native `SpeechRecognition` API.
-  - Provides `startListening`, `stopListening`, and the current `transcript`.
-  - Handles browser compatibility checks.
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v18.x or later)
-- The [backend service](../backend) must be running, either locally or deployed.
-
-### 1. Installation
-
-Navigate to the `apps/frontend` directory and install the dependencies:
-
-```bash
+```sh
 npm install
-```
-
-### 2. Environment Variables
-
-Create a `.env.local` file in the frontend directory. These values are read only by the Next.js server proxy and are never included in browser JavaScript.
-
-```bash
 cp .env.example .env.local
-```
-
-If your backend is running locally on port 8080, the file should contain:
-
-```
-BACKEND_API_BASE=http://localhost:8080
-BACKEND_API_SECRET_KEY=... # Must match API_SECRET_KEY in the backend
-```
-
-If your backend is deployed, replace the URL with your production API endpoint.
-
-## Development
-
-To run the frontend development server:
-
-```bash
 npm run dev
 ```
 
-This will start the application, typically on `http://localhost:3000`.
+The written portfolio needs no AI credentials. To enable live AI features, set the server-only `BACKEND_API_BASE` and `BACKEND_API_SECRET_KEY` to match the backend service. Never use `NEXT_PUBLIC_` for either. If the backend cannot be reached, the document workbench serves bundled documents and recorded replay with live execution disabled. Refresh the page to reconnect.
 
-## Deployment
+## Pages
 
-This Next.js application is optimized for deployment on [Vercel](https://vercel.com/). Simply connect your Git repository to a Vercel project. 
+- `/`: positioning, selected work, capabilities, experience, principles, contact.
+- `/projects`: curated engineering work and a concise NeuroSight note.
+- `/projects/[slug]`: statically generated case studies with architecture disclosures and decision records. Unknown slugs return 404.
+- `/about`: professional background and education.
+- `/lab`: the portfolio assistant and links into the workbench.
+- `/lab/documents`: source inspection, run comparison, replay, and report export.
 
-Set `BACKEND_API_BASE` and `BACKEND_API_SECRET_KEY` in the Vercel project settings. Do not use a `NEXT_PUBLIC_` prefix for either value.
+## Content and implementation
+
+`src/data/portfolio.ts` is the curated public content model. `src/data/resume.json` is the original owner-provided material; unsupported metrics and credentials are not automatically rendered in the new pages. The existing PDF remains an owner-provided download and requires a separate content review. Backend résumé/vector data is managed separately.
+
+`src/components/portfolio/` contains server-rendered composition, diagrams, project lists, and footer. `Header`, `Chat`, and the existing lab workbench are interactive islands. `src/lib/chat/stream.ts` parses named SSE events; `chatStore.ts` manages request exclusivity, bounded waits, source validation, and interrupted responses.
+
+`src/data/lab/corpus.json` is a bundled snapshot of the backend corpus for offline browsing. When updating documents, copy the prepared corpus and review recorded-run source offsets together. Recorded replay is historical output, never a live measurement.
+
+## Validation
+
+```sh
+npm run lint
+npm run test:chat
+npm run test:lab
+npm run build
+npm run typecheck
+npm run start
+```
+
+Run the build and typecheck sequentially: the build regenerates `.next/types`. Next's existing Google font integration needs network access on an uncached build; fonts are served locally after building.
+
+See `../docs/portfolio-research.md`, `../docs/portfolio-redesign-plan.md`, and `../docs/portfolio-validation.md` for the rationale, actual validation results, and known backend limitations. Production hosting needs the existing backend only for live AI requests. No deployment was performed by the redesign.

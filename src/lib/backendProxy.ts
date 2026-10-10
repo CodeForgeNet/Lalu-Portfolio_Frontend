@@ -63,7 +63,7 @@ export async function proxyToBackend(request: Request, path: string): Promise<Re
 }
 
 export async function getBackendCorpus(): Promise<Corpus> {
-  const response = await backendFetch("/api/lab/documents");
+  const response = await backendFetch("/api/lab/documents", { signal: AbortSignal.timeout(5000) });
   if (!response.ok) throw new Error("The document collection is unavailable.");
   const value = await response.json() as Corpus;
   if (!value || typeof value.version !== "string" || !Array.isArray(value.documents) || !Array.isArray(value.chunks)) throw new Error("The backend returned an invalid document collection.");
