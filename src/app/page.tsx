@@ -22,7 +22,7 @@ export default function Home() {
             </h1>
             <p className="hero-description">
               I’m Lalu. I build evidence-aware AI products and the engineering
-              around them—decision guardrails, agent workflows, evaluation,
+              around them: decision guardrails, agent workflows, evaluation,
               reliable APIs, and interfaces that expose how the system behaves.
             </p>
             <div className="hero-actions">
