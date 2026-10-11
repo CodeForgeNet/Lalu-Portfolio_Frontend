@@ -22,25 +22,55 @@ export default function LabPage() {
           document investigation from evidence to answer.
         </p>
       </header>
+      <section className="lab-feature lab-page-feature" aria-labelledby="evidence-feature-title">
+        <div>
+          <p className="eyebrow">01 / Document ingestion + evidence</p>
+          <h2 id="evidence-feature-title">
+            Change the evidence.
+            <br />
+            <em>See what survives.</em>
+          </h2>
+          <p>
+            Start with a prepared document collection, inspect the passages
+            selected for a question, then remove a source and compare the
+            answer. Every run keeps its evidence trail.
+          </p>
+          <Link className="button-primary" href="/lab/documents">
+            Open the evidence workbench <span aria-hidden="true">↗</span>
+          </Link>
+        </div>
+        <div className="evidence-graphic" aria-label="Evidence workbench flow">
+          <div className="evidence-line">
+            <span>01</span> SELECT SOURCE DOCUMENTS <b>↘</b>
+          </div>
+          <div className="evidence-line">
+            <span>02</span> RETRIEVE TRACEABLE PASSAGES <b>↘</b>
+          </div>
+          <div className="evidence-line">
+            <span>03</span> COMPARE, REPLAY, EXPORT <b>↗</b>
+          </div>
+          <p>Prepared corpus · source offsets · recorded run</p>
+        </div>
+      </section>
       <div className="lab-layout">
         <section id="assistant" aria-label="Portfolio assistant">
           <Assistant />
         </section>
         <aside className="lab-aside">
           <div>
-            <p className="eyebrow">01 / Evidence workbench</p>
-            <h2>Document investigation</h2>
+            <p className="eyebrow">02 / Portfolio assistant</p>
+            <h2>Ask about the work</h2>
             <p>
-              Select source documents, inspect the retrieved passages, and
-              compare what changes when you exclude evidence. Recorded replay is
-              available without a new model call.
+              Ask a question and inspect the retrieved context and execution
+              trace. This is the conversational surface; the workbench above
+              is where evidence can be changed deliberately.
             </p>
-            <Link className="text-link" href="/lab/documents">
-              Open the workbench ↗
+            <Link className="text-link" href="#assistant">
+              Try the assistant ↓
             </Link>
           </div>
           <div>
-            <p className="eyebrow">02 / Read the implementation</p>
+            <p className="eyebrow">03 / Read the implementation</p>
             <h2>Behind the assistant</h2>
             <p>
               Explore the request path, semantic cache trade-offs, and the

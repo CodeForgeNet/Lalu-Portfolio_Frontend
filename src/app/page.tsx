@@ -94,40 +94,40 @@ export default function Home() {
             All project notes ↗
           </Link>
         </section>
-        <section className="lab-feature">
+        <section className="lab-feature landing-evidence-feature">
           <div>
-            <p className="eyebrow">An open workbench</p>
+            <p className="eyebrow">03 / Document ingestion + evidence</p>
             <h2>
-              Don’t just read the answer.
+              Change the evidence.
               <br />
-              <em>Follow the evidence.</em>
+              <em>See what survives.</em>
             </h2>
             <p>
-              Choose documents. Inspect retrieved passages. Change the evidence
-              and compare the result. Or explore a recorded run without a new
-              model request.
+              Start with a prepared document collection, inspect the passages
+              selected for a question, then remove a source and compare the
+              answer. Every run keeps its evidence trail.
             </p>
-            <Link href="/lab/documents" className="text-link">
-              Open document investigation ↗
+            <Link href="/lab/documents" className="button-primary">
+              Open the evidence workbench <span aria-hidden="true">↗</span>
             </Link>
           </div>
           <div className="evidence-graphic" aria-hidden="true">
             <div className="evidence-line">
-              <span>01</span> SELECT DOCUMENTS <b>↘</b>
+              <span>01</span> SELECT SOURCE DOCUMENTS <b>↘</b>
             </div>
             <div className="evidence-line">
-              <span>02</span> INSPECT PASSAGES <b>↘</b>
+              <span>02</span> RETRIEVE TRACEABLE PASSAGES <b>↘</b>
             </div>
             <div className="evidence-line">
-              <span>03</span> QUESTION THE ANSWER <b>↗</b>
+              <span>03</span> COMPARE, REPLAY, EXPORT <b>↗</b>
             </div>
-            <p>Evidence is part of the interface.</p>
+            <p>Prepared corpus · source offsets · recorded run</p>
           </div>
         </section>
         <section className="section" id="capabilities">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">03 / Capabilities</p>
+              <p className="eyebrow">04 / Capabilities</p>
               <h2>
                 The whole path
                 <br />
@@ -153,7 +153,7 @@ export default function Home() {
         </section>
         <section className="section experience-section">
           <div>
-            <p className="eyebrow">04 / In practice</p>
+            <p className="eyebrow">05 / In practice</p>
             <h2>
               Engineering
               <br />
@@ -184,7 +184,7 @@ export default function Home() {
         <section className="section principles">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">05 / Engineering principles</p>
+              <p className="eyebrow">06 / Engineering principles</p>
               <h2>
                 Make the behavior <em>visible.</em>
               </h2>
