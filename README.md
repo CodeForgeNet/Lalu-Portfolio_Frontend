@@ -17,7 +17,7 @@ The written portfolio needs no AI credentials. To enable live AI features, set t
 ## Pages
 
 - `/`: positioning, selected work, capabilities, experience, principles, contact.
-- `/projects`: curated engineering work and a concise NeuroSight note.
+- `/projects`: curated engineering work, led by the NeuroSight case study.
 - `/projects/[slug]`: statically generated case studies with architecture disclosures and decision records. Unknown slugs return 404.
 - `/about`: professional background and education.
 - `/lab`: the portfolio assistant and links into the workbench.

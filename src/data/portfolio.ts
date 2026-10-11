@@ -41,6 +41,267 @@ export type CaseStudy = {
 
 export const studies: CaseStudy[] = [
   {
+    slug: "neurosight",
+    title: "NeuroSight",
+    category: "Featured open source · Bio-inspired computer vision",
+    year: "2026",
+    headline: "Motion detection, inspired by a fly.",
+    summary:
+      "A lightweight Python motion-detection library that translates the Drosophila optic-lobe circuit into an explainable, CPU-friendly vision pipeline.",
+    contribution:
+      "Designed and published the library: connectome-weight integration, Hassenstein–Reichardt correlation, frame and video processing, directional outputs, tests, documentation, and PyPI packaging.",
+    technologies: ["Python", "NumPy", "OpenCV", "PyPI"],
+    outcome:
+      "A self-contained motion detector that produces saliency maps and local directional vectors without a trained neural network or GPU runtime.",
+    architecture: {
+      caption:
+        "NeuroSight · motion-signal path. Open a component to inspect its role.",
+      nodes: [
+        {
+          name: "Frame pair",
+          detail:
+            "The detector accepts consecutive video frames through a frame-by-frame API or streams them from a video source. OpenCV handles video I/O and image preparation.",
+        },
+        {
+          name: "ON / OFF signals",
+          detail:
+            "Brightness changes are separated into pathways analogous to the fly visual system: T4 neurons respond to moving bright edges and T5 neurons to moving dark edges.",
+        },
+        {
+          name: "Temporal delay",
+          detail:
+            "Medulla-inspired channels provide delayed and current signals. This time offset lets a neighboring-pixel correlation distinguish motion from a static contrast edge.",
+        },
+        {
+          name: "Direction correlation",
+          detail:
+            "A Hassenstein–Reichardt-style correlator combines delayed and undelayed neighboring signals. Pre-extracted, normalized connectome weights shape the four cardinal direction responses.",
+        },
+        {
+          name: "Motion outputs",
+          detail:
+            "The public API returns a normalized saliency map plus tile-level vectors containing dominant direction, confidence, and spatial coordinates. Video output can overlay the vectors.",
+        },
+      ],
+      branch:
+        "Bright-edge motion → ON pathway / dark-edge motion → OFF pathway → four directional responses → saliency and vectors.",
+    },
+    sections: [
+      {
+        title: "Problem & context",
+        body: "Robotics and edge-vision systems often need a fast indication of where motion is happening and which way it is moving. Large learned optical-flow models can add memory, accelerator, and deployment costs. NeuroSight explores a different trade-off: translate a compact biological motion circuit into deterministic array operations that remain inspectable.",
+      },
+      {
+        title: "Biological model",
+        body: "The implementation is based on the fly optic lobe. T4 and T5 pathways cover moving bright and dark edges, with four subtypes representing the cardinal directions. The project documents synapse counts extracted from the Drosophila hemibrain connectome through neuprint and normalized into correlator weights. This is a software abstraction inspired by that circuit, not a complete simulation of fly vision.",
+      },
+      {
+        title: "Implementation",
+        body: "NumPy performs the signal and correlation operations while OpenCV handles frames, cameras, and video files. The Hassenstein–Reichardt mechanism multiplies a delayed response at one location with a current response at a neighbor; comparing opposing correlations produces direction-selective responses. Results are aggregated into spatial tiles and exposed as a saliency array and directional-vector dictionary.",
+      },
+      {
+        title: "Evaluation & testing",
+        body: "The supplied résumé reports complete cardinal-direction accuracy on synthetic tests and 36 unit tests. The public repository contains a test suite and documents typed, tested packaging, but those exact results were not independently rerun during this portfolio change. Synthetic direction tests verify controlled motion patterns; they do not establish accuracy on every camera, scene, or robotics task.",
+      },
+      {
+        title: "Performance",
+        body: "The repository reports 45–50 FPS, 20–25 ms latency, and 15 MB memory for 1280×720 video on an Intel i7-12700K, alongside comparisons with OpenCV OpticalFlow and TensorFlow RAFT. These are maintainer-published measurements under that stated setup, not measurements reproduced by this portfolio. The package is published on PyPI and requires Python 3.10 or newer.",
+      },
+      {
+        title: "Failure modes & limits",
+        body: "A compact correlation model trades dense optical-flow precision for simplicity. Tile size controls spatial detail; coarse tiles can hide small motion, while smaller tiles increase work and noise sensitivity. Camera motion, flicker, low contrast, occlusion, and parameters that do not match the frame rate can weaken the directional signal. The library is complementary to optical flow rather than a universal replacement.",
+      },
+      {
+        title: "Where it can go next",
+        body: "The saliency and vector outputs provide a base for collision avoidance, looming cues, and time-to-contact experiments. Stronger next steps include repeatable benchmarks across ARM hardware, real-world annotated motion sequences, sensitivity analysis for tile size and temporal constants, and comparisons that publish scripts and raw results alongside summary tables.",
+      },
+    ],
+    decisions: [
+      {
+        title: "Use a biological correlator instead of a trained model",
+        context:
+          "The goal was a small, explainable motion primitive that could run without a GPU or model download.",
+        decision:
+          "Implement a Hassenstein–Reichardt-style correlation pipeline with connectome-derived directional weights.",
+        consequence:
+          "The signal path stays inspectable and portable, while giving up the dense accuracy and scene-level learning available to larger optical-flow models.",
+      },
+      {
+        title: "Expose saliency and structured vectors",
+        context:
+          "A heatmap is useful for visualization, but downstream robotics code also needs direction and location.",
+        decision:
+          "Return both a normalized saliency map and tile-level direction, confidence, and coordinates.",
+        consequence:
+          "The same detector supports visual overlays and programmatic reactions, with tile resolution becoming an explicit accuracy/performance trade-off.",
+      },
+      {
+        title: "Bundle extracted weights",
+        context:
+          "Requiring a connectome service at runtime would make a small motion library fragile and hard to deploy at the edge.",
+        decision:
+          "Ship the pre-extracted biological weights with the package and keep runtime processing local.",
+        consequence:
+          "Installation and inference stay self-contained, while weight provenance and future connectome updates must be maintained in the repository.",
+      },
+    ],
+    links: [
+      {
+        label: "View repository",
+        href: "https://github.com/CodeForgeNet/neurosight",
+      },
+      { label: "View on PyPI", href: "https://pypi.org/project/neurosight/" },
+    ],
+    evidence:
+      "Source: the public CodeForgeNet/neurosight repository, its README, the PyPI 0.1.1 package page, and owner-provided résumé data. Repository benchmark results are labelled as reported and were not rerun for this portfolio update.",
+  },
+  {
+    slug: "genesis-forge",
+    title: "Genesis Forge",
+    category: "Open source · Agent orchestration",
+    year: "2025–2026",
+    headline: "Bring specialist skills to the tools you already use.",
+    summary:
+      "A portable library of specialist agents, skills, and workflows, with local task routing and MCP integration for AI coding clients.",
+    contribution:
+      "Personal open-source project for reusable agent instructions, skill discovery, and CLI integration.",
+    technologies: ["MCP", "Node.js", "Python", "Claude Code", "Gemini CLI"],
+    outcome:
+      "One skill library exposed through client rules, MCP tools, and a Node.js package interface.",
+    architecture: {
+      caption:
+        "Genesis Forge · documented skill-discovery path. Open a component to inspect its role.",
+      nodes: [
+        {
+          name: "Coding client",
+          detail:
+            "Claude Code, Gemini CLI, or Cline supplies the working environment. The host client handles model access and authentication.",
+        },
+        {
+          name: "Rules / MCP",
+          detail:
+            "Gemini CLI integrates through a rules file. MCP-compatible clients discover tools such as skill_search, route_task, and get_skill_registry.",
+        },
+        {
+          name: "Local routing",
+          detail:
+            "Deterministic routing selects relevant agents and skills locally. Genesis Forge does not require a separate model API key for this lookup.",
+        },
+        {
+          name: "Skill library",
+          detail:
+            "The README describes 24 specialist agents, 79 skill modules, and 13 workflows. These are reusable instructions and expertise supplied to the host client.",
+        },
+        {
+          name: "Client execution",
+          detail:
+            "The host client uses the selected instructions in its own workflow. Model behavior, tool permissions, and execution remain responsibilities of that environment.",
+        },
+      ],
+    },
+    sections: [
+      {
+        title: "Problem & context",
+        body: "Coding assistants need different expertise for planning, implementation, debugging, and review. Copying those instructions between clients makes them harder to maintain. Genesis Forge packages specialist guidance into a shared library that existing AI coding environments can discover.",
+      },
+      {
+        title: "Integration workflow",
+        body: "The documented setup command connects rules and MCP configuration to supported clients; a remove command reverses those integrations. Gemini uses a master rules file, while Claude Code and Cline can discover skills through MCP. Node.js consumers can also import the package's skill-path helpers.",
+      },
+      {
+        title: "Routing & maintenance",
+        body: "Routing runs locally and selects from a skill registry. The repository documents rebuilding that registry with a Python script after adding skills. Keeping discovery separate from model execution lets the same content serve multiple clients, while making registry freshness and client compatibility explicit maintenance concerns.",
+      },
+      {
+        title: "Scope & limitations",
+        body: "This is an expertise provider within an existing AI environment. The documented agent and workflow counts describe its library, not independently running services or guaranteed task success. This case study does not claim measured token savings, download totals, or benchmarked orchestration quality.",
+      },
+    ],
+    links: [
+      {
+        label: "View repository",
+        href: "https://github.com/CodeForgeNet/genesis-forge",
+      },
+      {
+        label: "View on npm",
+        href: "https://www.npmjs.com/package/genesis-forge",
+      },
+    ],
+    evidence:
+      "Source: the public CodeForgeNet/genesis-forge README and owner-provided résumé. Architecture describes the documented integration model; package installation and client execution were not independently tested for this portfolio update.",
+  },
+  {
+    slug: "opencontext",
+    title: "OpenContext",
+    category: "Open source · User-owned AI context",
+    year: "2025–2026",
+    headline: "Carry your context between AI tools.",
+    summary:
+      "A self-hostable context protocol, documented as PCSL, that lets AI tools request selected personal-context namespaces through a local API.",
+    contribution:
+      "Personal open-source project exploring portable AI context, scoped access, and browser integration.",
+    technologies: ["Python", "FastAPI", "JWT", "MCP", "Browser extension"],
+    outcome:
+      "A documented CLI and API for maintaining context, issuing scoped tokens, inspecting access logs, and revoking clients.",
+    architecture: {
+      caption:
+        "OpenContext / PCSL · documented context-access path. Open a component to inspect its role.",
+      nodes: [
+        {
+          name: "Context store",
+          detail:
+            "The init command creates a local context.json file and signing secret. Namespaces separate identity, preferences, skills, projects, goals, and other context.",
+        },
+        {
+          name: "FastAPI server",
+          detail:
+            "The local service exposes discovery, authorization, context retrieval, updates, audit logs, and client revocation through HTTP endpoints.",
+        },
+        {
+          name: "Scoped token",
+          detail:
+            "A client requests named scopes and receives a short-lived JWT. The documented context endpoint returns the namespaces allowed by that token.",
+        },
+        {
+          name: "Tool integration",
+          detail:
+            "HTTP clients and SDKs fetch context for use in an AI workflow. The repository also includes MCP and browser-extension integration paths.",
+        },
+        {
+          name: "Audit & revoke",
+          detail:
+            "The CLI provides commands to inspect access logs and revoke client access. Revocation controls future access; it cannot recall context already copied into another tool.",
+        },
+      ],
+    },
+    sections: [
+      {
+        title: "Problem & context",
+        body: "Moving between AI tools often means repeating the same background, preferences, and project details. OpenContext separates that information from any single chat product. Its public repository describes PCSL, the Personal Context Sovereignty Layer, as a protocol for keeping context under user control and sharing selected namespaces.",
+      },
+      {
+        title: "Context workflow",
+        body: "The documented CLI initializes a local context file, starts the API server, and supports viewing or updating context. A tool requests scoped access, then fetches context using its JWT. The Python SDK can insert the retrieved context into a prompt; raw HTTP offers an integration path for other clients.",
+      },
+      {
+        title: "Access & deployment",
+        body: "Namespaces make the sharing boundary explicit: an integration can request preferences and skills without requiring the entire context file. Local hosting is the default documented workflow, with optional Docker and cloud deployment. Once context is supplied to an external AI tool, that tool's handling of the data becomes part of the privacy boundary.",
+      },
+      {
+        title: "Scope & limitations",
+        body: "The README identifies a browser-extension limitation: injecting raw JSON into textareas may not work with every AI chat interface. This case study describes the documented protocol and interfaces; it does not establish a security audit, universal client compatibility, or tested cloud deployment. Scoped tokens still require a correctly configured authorization boundary.",
+      },
+    ],
+    links: [
+      {
+        label: "View repository",
+        href: "https://github.com/CodeForgeNet/opencontext",
+      },
+    ],
+    evidence:
+      "Source: the public CodeForgeNet/opencontext README, which documents the project as PCSL, and owner-provided résumé. CLI behavior, access controls, and integrations were not independently executed or audited for this portfolio update.",
+  },
+  {
     slug: "ai-portfolio",
     title: "Portfolio Assistant",
     category: "Personal project · Retrieval & streaming",

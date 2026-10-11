@@ -3,7 +3,7 @@ import ProjectList from "@/components/portfolio/ProjectList";
 export const metadata: Metadata = {
   title: "Engineering work",
   description:
-    "Case studies in retrieval, document intelligence, and prompt testing. Explore the implementation and its trade-offs.",
+    "Case studies in bio-inspired computer vision, retrieval, document intelligence, and prompt testing. Explore the implementation and its trade-offs.",
   alternates: { canonical: "/projects" },
 };
 export default function ProjectsPage() {
@@ -22,19 +22,6 @@ export default function ProjectsPage() {
         </p>
       </header>
       <ProjectList />
-      <aside className="project-note">
-        <p className="eyebrow">Also exploring / Computer vision</p>
-        <h2>NeuroSight</h2>
-        <p>
-          A biologically inspired motion detection library using Python, NumPy,
-          and OpenCV. An exploration of motion signals through correlation
-          rather than a trained deep-learning model.
-        </p>
-        <p>
-          This project note is based on the supplied project description;
-          benchmark and deployment claims are intentionally omitted.
-        </p>
-      </aside>
     </main>
   );
 }
