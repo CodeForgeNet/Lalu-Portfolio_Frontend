@@ -40,7 +40,7 @@
       "project": "Hermes Agent",
       "stars": "227k",
       "pr_number": "PR #60883",
-      "pr_url": "https://github.com/HermesAgent/HermesAgent/pull/60883",
+      "pr_url": "https://github.com/NousResearch/hermes-agent/pull/60883",
       "description": "Optimized session message pagination — fixed unbounded state blob growth from missing cleanup on session boundaries.",
       "impact": "40% reduction in per-interaction token consumption (applied in Genesis Forge)"
     }

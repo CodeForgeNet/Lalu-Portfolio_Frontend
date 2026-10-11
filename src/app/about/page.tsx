@@ -20,8 +20,8 @@ export default function AboutPage() {
         </h1>
         <p>
           I’m Lalu Kumar, an AI Systems & Full Stack Engineer. My work spans
-          retrieval-backed applications, document intelligence, and the product
-          interfaces that make them useful.
+          evidence-gated document systems, agent orchestration, open-source
+          infrastructure, and the product interfaces that make them useful.
         </p>
         <div className="hero-actions">
           <a href={`mailto:${profile.email}`} className="button-primary">

@@ -41,6 +41,111 @@ export type CaseStudy = {
 
 export const studies: CaseStudy[] = [
   {
+    slug: "evidence-gated-legal-drafting",
+    title: "Evidence-Gated Legal Drafting",
+    category: "Professional work · Legal AI systems",
+    year: "2026",
+    headline: "Know when the evidence is not enough.",
+    summary:
+      "A legal drafting workflow that analyzes source material, detects evidence gaps and contradictions, and uses deterministic rules to decide whether drafting may proceed.",
+    contribution:
+      "Designed and implemented the typed drafting context, document-specific analysis flow, guardrails, feasibility resolver, and evidence-aware next-step logic within a larger company product.",
+    technologies: ["TypeScript", "Node.js", "LLM workflows", "Jest"],
+    outcome:
+      "Separated AI interpretation from product decisions, preventing unsupported document generation while preserving useful source analysis.",
+    architecture: {
+      caption:
+        "Evidence-gated drafting · sanitized system design. Open a stage to inspect its responsibility.",
+      nodes: [
+        {
+          name: "Drafting goal",
+          detail:
+            "A typed session context carries the selected document type, case context, and uploaded file references through the workflow. The requested document determines which evidence elements are required.",
+        },
+        {
+          name: "Source analysis",
+          detail:
+            "Documents are classified and summarized independently. The workflow builds an evidence inventory, attributes claims to their sources, and retains useful summaries even when the requested draft is unsupported.",
+        },
+        {
+          name: "Evidence guardrails",
+          detail:
+            "Document-specific checks distinguish supported, missing, not-applicable, and unknown elements. Explicit mismatch rules handle cases where a general scoring threshold would be too weak.",
+        },
+        {
+          name: "Feasibility resolver",
+          detail:
+            "Application rules—not free-form model output—select READY, PARTIAL_MISMATCH, INCOMPATIBLE, or AMBIGUOUS and return only the actions permitted for that evidence state.",
+        },
+        {
+          name: "Controlled draft",
+          detail:
+            "Drafting starts only when the resolver permits it. Final validation checks source support, document structure, unresolved contradictions, and unsupported content before delivery.",
+        },
+      ],
+      branch:
+        "Ready → draft / partial → limited draft or request material / incompatible → explain mismatch / ambiguous → clarify.",
+    },
+    sections: [
+      {
+        title: "Problem & context",
+        body: "Legal files can contain extensive case information without containing the evidence required for a requested document. Seven litigation filings may support a case summary while providing no expert qualifications, methodology, or opinions for an Expert Report. Treating document volume as evidence sufficiency produces confident but unsupported drafts.",
+      },
+      {
+        title: "System design",
+        body: "The workflow first identifies the drafting goal, then classifies and summarizes sources, builds an evidence inventory, and evaluates document-specific requirements. Specialized analysis components interpret the material; a deterministic feasibility resolver controls whether the product may proceed, request missing material, offer a limited draft, change the goal, or ask for clarification.",
+      },
+      {
+        title: "Decision model",
+        body: "READY permits a supported draft. PARTIAL_MISMATCH permits a limited draft only when meaningful relevant evidence exists. INCOMPATIBLE removes that option. AMBIGUOUS requests targeted clarification instead of treating uncertainty as incompatibility. Structured resolver output remains authoritative; the suggestion layer may explain actions but cannot invent new ones.",
+      },
+      {
+        title: "Failure behavior",
+        body: "A blocked draft still returns source summaries, available evidence, missing requirements, contradictions, and valid next steps. Allegations remain attributed rather than becoming established facts. Missing expert material cannot be replaced by background facts from pleadings, and changing the drafting goal reuses the source inventory while rerunning goal-specific analysis.",
+      },
+      {
+        title: "Validation & testing",
+        body: "Typed contracts keep analysis, feasibility, and presentation separate. Tests cover routing and resolver behavior, while TypeScript compilation checks service boundaries. Final validation is designed to stop unsupported claims, silent gap-filling, incorrect document structure, and evidence-free contradiction resolution.",
+      },
+      {
+        title: "Scope",
+        body: "This case study presents a sanitized architecture from professional work. It excludes employer-specific prompts, customer data, deployment details, and unconfirmed infrastructure. It describes evidence-control and workflow design—not legal advice or a claim that language models can independently determine legal sufficiency.",
+      },
+    ],
+    decisions: [
+      {
+        title: "Keep feasibility deterministic",
+        context:
+          "A model can interpret evidence but may also rationalize missing material or propose an unsafe action.",
+        decision:
+          "Represent evidence state and allowed actions as typed values resolved by explicit application rules.",
+        consequence:
+          "Product behavior becomes testable and consistent, while document requirements must be maintained deliberately as supported drafting goals expand.",
+      },
+      {
+        title: "Preserve analysis when drafting is blocked",
+        context:
+          "An incompatibility response previously risked hiding useful summaries of uploaded material.",
+        decision:
+          "Return source analysis and feasibility together instead of discarding analysis after a blocked decision.",
+        consequence:
+          "Users retain useful work and understand the gap, at the cost of a richer response contract and more UI states.",
+      },
+      {
+        title: "Separate missing from unknown",
+        context:
+          "Absent evidence, irrelevant evidence, and failed classification require different next steps.",
+        decision:
+          "Track supported, partial, missing, not-applicable, and unknown evidence states explicitly.",
+        consequence:
+          "The system can ask focused questions instead of collapsing every uncertainty into a generic upload error.",
+      },
+    ],
+    links: [],
+    evidence:
+      "Source: owner-provided September 2026 architecture summary and reported implementation history. Employer-specific source code and private case material were not included or independently reviewed; infrastructure not established by that record is intentionally omitted.",
+  },
+  {
     slug: "neurosight",
     title: "NeuroSight",
     category: "Featured open source · Bio-inspired computer vision",
@@ -526,11 +631,11 @@ export const studies: CaseStudy[] = [
 
 export const capabilities = [
   {
-    title: "Retrieval & AI applications",
+    title: "Evidence-aware AI workflows",
     detail:
-      "Question embeddings, vector search, context assembly, and streamed generation.",
-    tools: "Pinecone · provider APIs · TypeScript",
-    href: "/projects/ai-portfolio",
+      "Source analysis, typed evidence states, deterministic feasibility decisions, and controlled generation.",
+    tools: "TypeScript · LLM workflows · guardrails",
+    href: "/projects/evidence-gated-legal-drafting",
   },
   {
     title: "Evaluation & inspectability",
@@ -547,13 +652,22 @@ export const capabilities = [
     href: "/projects/ai-portfolio",
   },
 ];
+
+export const openSource = resume.open_source.map((entry) => ({
+  project: entry.project,
+  reference: entry.pr_number,
+  href: entry.pr_url,
+  description: entry.description,
+  impact: entry.impact,
+}));
+
 export const experience = resume.experience.map((entry, index) => ({
   title: entry.title,
   organization: entry.organization,
   duration: entry.duration,
   type: entry.type,
   description: [
-    "AI legal document products and evidence-oriented workflows. My work spans AI application development and full-stack product engineering.",
+    "Evidence-gated legal drafting systems: document-specific analysis, typed workflow context, deterministic feasibility rules, guardrails, and controlled generation.",
     "Full-stack product engineering for real estate workflows, including authentication, CRM integrations, and real-time application state.",
     "Java development apprenticeship focused on Spring Boot services, database queries, and reusable application patterns.",
   ][index],

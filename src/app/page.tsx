@@ -1,5 +1,10 @@
 import Link from "next/link";
-import { capabilities, experience, profile } from "@/data/portfolio";
+import {
+  capabilities,
+  experience,
+  openSource,
+  profile,
+} from "@/data/portfolio";
 import ProjectList from "@/components/portfolio/ProjectList";
 import SystemDrawing from "@/components/portfolio/SystemDrawing";
 
@@ -16,9 +21,9 @@ export default function Home() {
               to <em>working system.</em>
             </h1>
             <p className="hero-description">
-              I’m Lalu. I build AI applications and the engineering around them
-              — retrieval, evaluation, reliable APIs, and interfaces that make
-              the work understandable.
+              I’m Lalu. I build evidence-aware AI products and the engineering
+              around them—decision guardrails, agent workflows, evaluation,
+              reliable APIs, and interfaces that expose how the system behaves.
             </p>
             <div className="hero-actions">
               <Link href="#work" className="button-primary">
@@ -41,10 +46,39 @@ export default function Home() {
             Scroll to explore ↓
           </a>
         </div>
+        <section className="section open-source-section" id="open-source">
+          <div className="section-heading">
+            <div>
+              <p className="eyebrow">01 / Upstream contributions</p>
+              <h2>
+                Fixes that reached <em>other systems.</em>
+              </h2>
+            </div>
+            <p>
+              Contributions to established agent projects,
+              <br />
+              linked to their review history.
+            </p>
+          </div>
+          <div className="capability-grid open-source-grid">
+            {openSource.map((entry) => (
+              <article key={`${entry.project}-${entry.reference}`}>
+                <span className="capability-tools">
+                  {entry.project} · {entry.reference}
+                </span>
+                <h3>{entry.impact}</h3>
+                <p>{entry.description}</p>
+                <a className="text-link" href={entry.href}>
+                  Inspect contribution ↗
+                </a>
+              </article>
+            ))}
+          </div>
+        </section>
         <section className="section" id="work">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">01 / Selected engineering work</p>
+              <p className="eyebrow">02 / Selected engineering work</p>
               <h2>
                 Built to be <em>looked into.</em>
               </h2>
@@ -93,7 +127,7 @@ export default function Home() {
         <section className="section" id="capabilities">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">02 / Capabilities</p>
+              <p className="eyebrow">03 / Capabilities</p>
               <h2>
                 The whole path
                 <br />
@@ -119,7 +153,7 @@ export default function Home() {
         </section>
         <section className="section experience-section">
           <div>
-            <p className="eyebrow">03 / In practice</p>
+            <p className="eyebrow">04 / In practice</p>
             <h2>
               Engineering
               <br />
@@ -150,7 +184,7 @@ export default function Home() {
         <section className="section principles">
           <div className="section-heading">
             <div>
-              <p className="eyebrow">04 / Engineering principles</p>
+              <p className="eyebrow">05 / Engineering principles</p>
               <h2>
                 Make the behavior <em>visible.</em>
               </h2>

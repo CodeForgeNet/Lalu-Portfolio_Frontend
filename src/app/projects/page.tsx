@@ -3,7 +3,7 @@ import ProjectList from "@/components/portfolio/ProjectList";
 export const metadata: Metadata = {
   title: "Engineering work",
   description:
-    "Case studies in bio-inspired computer vision, retrieval, document intelligence, and prompt testing. Explore the implementation and its trade-offs.",
+    "Case studies in evidence-gated legal drafting, bio-inspired computer vision, agent systems, retrieval, and evaluation. Explore the implementation and its trade-offs.",
   alternates: { canonical: "/projects" },
 };
 export default function ProjectsPage() {
@@ -17,8 +17,8 @@ export default function ProjectsPage() {
           <em>The decisions behind them.</em>
         </h1>
         <p>
-          Personal projects and open-source work, explained through their
-          implementation, constraints, and lessons.
+          Professional systems, personal projects, and open-source work,
+          explained through their implementation, constraints, and lessons.
         </p>
       </header>
       <ProjectList />
