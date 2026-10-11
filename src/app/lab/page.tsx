@@ -38,6 +38,9 @@ export default function LabPage() {
           <Link className="button-primary" href="/lab/documents">
             Open the evidence workbench <span aria-hidden="true">↗</span>
           </Link>
+          <Link className="text-link" href="/lab/reliability">
+            Break an AI answer ↗
+          </Link>
         </div>
         <div className="evidence-graphic" aria-label="Evidence workbench flow">
           <div className="evidence-line">
@@ -52,13 +55,27 @@ export default function LabPage() {
           <p>Prepared corpus · source offsets · recorded run</p>
         </div>
       </section>
+      <section className="lab-feature lab-page-feature" aria-labelledby="resume-match-title">
+        <div>
+          <p className="eyebrow">02 / Browser-local recruiter utility</p>
+          <h2 id="resume-match-title">Paste a role.<br /><em>See the evidence.</em></h2>
+          <p>Compare a job description with my public engineering experience locally. JD text stays in the browser and disappears when you leave.</p>
+          <Link className="button-primary" href="/lab/resume-match">Open the resume match analyzer <span aria-hidden="true">↗</span></Link>
+        </div>
+        <div className="evidence-graphic" aria-label="Resume match flow">
+          <div className="evidence-line"><span>01</span> EXTRACT ROLE REQUIREMENTS <b>↘</b></div>
+          <div className="evidence-line"><span>02</span> COMPARE LOCAL EVIDENCE <b>↘</b></div>
+          <div className="evidence-line"><span>03</span> SHOW MATCHES, GAPS, QUESTIONS <b>↗</b></div>
+          <p>Needle WASM · no Pinecone · memory only</p>
+        </div>
+      </section>
       <div className="lab-layout">
         <section id="assistant" aria-label="Portfolio assistant">
           <Assistant />
         </section>
         <aside className="lab-aside">
           <div>
-            <p className="eyebrow">02 / Portfolio assistant</p>
+            <p className="eyebrow">03 / Portfolio assistant</p>
             <h2>Ask about the work</h2>
             <p>
               Ask a question and inspect the retrieved context and execution
@@ -70,7 +87,7 @@ export default function LabPage() {
             </Link>
           </div>
           <div>
-            <p className="eyebrow">03 / Read the implementation</p>
+            <p className="eyebrow">04 / Read the implementation</p>
             <h2>Behind the assistant</h2>
             <p>
               Explore the request path, semantic cache trade-offs, and the

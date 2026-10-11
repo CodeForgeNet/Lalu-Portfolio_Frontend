@@ -1,0 +1,46 @@
+.page { max-width: 1180px; margin: 0 auto; padding: 2rem 1.25rem 6rem; }
+.back { display: inline-flex; align-items: center; gap: .4rem; color: inherit; text-decoration: none; margin-bottom: 3rem; }
+.header { max-width: 720px; margin-bottom: 2.5rem; }
+.header h1 { margin: .5rem 0 1rem; font-size: clamp(3rem, 8vw, 6.5rem); line-height: .95; letter-spacing: -.06em; }
+.header p { max-width: 600px; color: var(--muted, #777); font-size: 1.05rem; line-height: 1.7; }
+.eyebrow { display: block; font: 700 .7rem/1.2 var(--font-jetbrains-mono), monospace; letter-spacing: .08em; text-transform: uppercase; color: var(--accent, #d34b2d); }
+.privacy { border: 1px solid rgba(211,75,45,.35); padding: 1rem 1.15rem; margin-bottom: 1.5rem; color: var(--muted, #777); line-height: 1.6; }
+.privacy strong { color: inherit; }
+.workspace { display: grid; grid-template-columns: minmax(280px, .85fr) minmax(0, 1.15fr); gap: 1.5rem; align-items: start; }
+.inputPanel, .results { border: 1px solid #d8d5ce; padding: clamp(1rem, 3vw, 1.5rem); color: #20211f; background: #fbfaf7; box-shadow: 0 10px 30px rgba(0, 0, 0, .08); }
+.inputPanel { position: sticky; top: 1rem; background: #f4f2ed; }
+.inputPanel label { display: block; font-weight: 700; margin-bottom: .65rem; color: #20211f; }
+.inputPanel textarea { width: 100%; resize: vertical; border: 1px solid #d2cec5; padding: .9rem; font: .85rem/1.6 var(--font-jetbrains-mono), monospace; background: #fffefa; color: #20211f; }
+.inputPanel textarea::placeholder { color: #8b8880; opacity: 1; }
+.inputMeta, .actions, .scoreRow, .sectionHeading { display: flex; justify-content: space-between; align-items: center; gap: .75rem; }
+.inputMeta, .muted, .note, .disclaimer, .aiBox p { color: var(--muted, #777); font-size: .78rem; line-height: 1.6; }
+.actions { justify-content: flex-start; margin-top: 1rem; flex-wrap: wrap; }
+.actions button, .aiBox button { display: inline-flex; align-items: center; gap: .45rem; border: 1px solid currentColor; padding: .7rem .9rem; cursor: pointer; background: transparent; color: inherit; font: inherit; }
+.actions button:disabled, .aiBox button:disabled { opacity: .45; cursor: not-allowed; }
+.primary { background: var(--ink, #111) !important; color: var(--paper, #fff) !important; }
+.secondary { color: inherit; }
+.note { margin: 1rem 0 0; }
+.error { color: #b42318; font-size: .85rem; line-height: 1.5; }
+.empty h2, .scoreRow h2 { margin: .5rem 0 .35rem; color: #20211f; font-size: clamp(1.7rem, 4vw, 2.8rem); letter-spacing: -.04em; }
+.empty { min-height: 22rem; display: grid; align-content: center; padding: clamp(1rem, 4vw, 2rem); border: 1px dashed #d2cec5; background: #fffefa; }
+.empty p { color: #65635e; line-height: 1.7; max-width: 420px; }
+.scoreRow { align-items: flex-start; }
+.score { font-size: clamp(3rem, 7vw, 5rem); line-height: .9; letter-spacing: -.08em; }
+.score small { font-size: .9rem; letter-spacing: 0; color: var(--muted, #777); }
+.warning { border-left: 3px solid #c88719; padding: .65rem .8rem; color: #76520b; background: rgba(200,135,25,.08); line-height: 1.5; }
+.breakdown { display: grid; grid-template-columns: repeat(5, 1fr); gap: .4rem; margin: 1.5rem 0 2rem; }
+.breakdown div { border-top: 2px solid #20211f; padding-top: .5rem; }
+.breakdown span { display: block; font-size: .68rem; text-transform: capitalize; color: var(--muted, #777); }
+.breakdown b { display: block; margin-top: .35rem; font-size: 1.25rem; }
+.matchList, .questions, .aiBox { border-top: 1px solid var(--line, #ddd); padding-top: 1rem; margin-top: 1.25rem; }
+.sectionHeading { font-weight: 700; }
+.matchList ul, .questions ul, .aiBox ul { list-style: none; padding: 0; margin: .75rem 0 0; }
+.matchList li { display: grid; gap: .2rem; padding: .7rem 0; border-bottom: 1px solid var(--line, #ddd); }
+.matchList small { color: var(--muted, #777); }
+.questions h3, .aiBox h3 { display: flex; align-items: center; gap: .4rem; margin: .45rem 0; }
+.questions li, .aiBox li { padding: .35rem 0 .35rem 1rem; position: relative; line-height: 1.5; }
+.questions li::before, .aiBox li::before { content: "↳"; position: absolute; left: 0; color: var(--accent, #d34b2d); }
+.aiBox { background: rgba(211,75,45,.04); padding: 1rem; }
+.aiBox h4 { margin: 1rem 0 .25rem; }
+.disclaimer { margin-top: 1.5rem; }
+@media (max-width: 800px) { .workspace { grid-template-columns: 1fr; } .inputPanel { position: static; } .breakdown { grid-template-columns: repeat(2, 1fr); } }

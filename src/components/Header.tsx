@@ -7,6 +7,8 @@ const links = [
   { href: "/projects", label: "Work" },
   { href: "/about", label: "About" },
   { href: "/lab", label: "Lab" },
+  { href: "/lab/resume-match", label: "FitCheck" },
+  { href: "/lab/reliability", label: "Reliability" },
 ];
 export default function Header() {
   const pathname = usePathname();
@@ -54,7 +56,7 @@ export default function Header() {
             <Link
               key={link.href}
               href={link.href}
-              aria-current={pathname.startsWith(link.href) ? "page" : undefined}
+              aria-current={pathname === link.href || (link.href !== "/lab" && pathname.startsWith(`${link.href}/`)) ? "page" : undefined}
               onClick={() => setOpen(false)}
             >
               {link.label}

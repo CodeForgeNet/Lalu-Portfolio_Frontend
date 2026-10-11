@@ -22,7 +22,7 @@ export type Corpus = {
   chunks: Chunk[];
 };
 
-export type RunSettings = { question: string; documentIds: string[]; topK: 2 | 4 | 6 };
+export type RunSettings = { question: string; documentIds: string[]; topK: 2 | 4 | 6; scenarioId?: string };
 export const stageIds = ["embed", "retrieve", "context", "generate"] as const;
 export type StageId = (typeof stageIds)[number];
 export type Status = "pending" | "running" | "complete" | "failed" | "cancelled";
@@ -30,13 +30,15 @@ export type Stage = { id: StageId; status: Status; input?: string; output?: stri
 export type Passage = Chunk & { citationId: string; rank: number; score: number; title: string };
 export type Citation = { id: string; chunkId: string; documentId: string };
 export type Usage = { inputTokens?: number; outputTokens?: number; totalTokens?: number };
+export type EvaluationCheck = { id: string; label: string; passed: boolean; evidence: string };
+export type Evaluation = { passed: boolean; checks: EvaluationCheck[] };
 
 export type EventPayload =
   | { type: "start"; settings: RunSettings; corpusVersion: string; startedAt: string; embeddingModel: string; generationModel: string }
   | { type: "stage"; stage: Stage }
   | { type: "sources"; passages: Passage[] }
   | { type: "delta"; text: string; generationModel?: string }
-  | { type: "done"; citations: Citation[]; warnings: string[]; usage?: Usage; totalDurationMs: number; generationModel: string }
+  | { type: "done"; citations: Citation[]; warnings: string[]; usage?: Usage; totalDurationMs: number; generationModel: string; evaluation?: Evaluation }
   | { type: "error"; message: string; status: "failed" | "cancelled"; origin: "server" | "client"; generationModel?: string };
 export type RunEvent = EventPayload & { runId: string; sequence: number; elapsedMs: number };
 
@@ -57,4 +59,5 @@ export type Run = {
   usage?: Usage;
   totalDurationMs?: number;
   error?: string;
+  evaluation?: Evaluation;
 };

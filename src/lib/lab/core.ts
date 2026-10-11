@@ -80,7 +80,7 @@ export function reduceEvent(run: Run | null, event: RunEvent): Run | null {
       next.answer += event.text;
       if (event.generationModel) next.generationModel = event.generationModel;
       break;
-    case "done": Object.assign(next, { status: "complete", citations: event.citations, warnings: event.warnings, usage: event.usage, totalDurationMs: event.totalDurationMs, generationModel: event.generationModel }); break;
+    case "done": Object.assign(next, { status: "complete", citations: event.citations, warnings: event.warnings, usage: event.usage, totalDurationMs: event.totalDurationMs, generationModel: event.generationModel, evaluation: event.evaluation }); break;
     case "error":
       next.status = event.status;
       next.error = event.message;

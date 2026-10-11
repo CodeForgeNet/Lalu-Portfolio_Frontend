@@ -25,15 +25,15 @@ export function useInvestigation() {
     return () => clearTimeout(timer);
   }, [playing, replay, speed]);
 
-  async function start(settings: RunSettings) {
+  async function start(settings: RunSettings, endpoint = "/api/lab/runs") {
     if (abortRef.current) return;
     const abort = new AbortController();
     abortRef.current = abort;
-    const timeout = setTimeout(() => abort.abort(new DOMException("Run deadline reached", "TimeoutError")), 90000);
+    const timeout = setTimeout(() => abort.abort(new DOMException("Run deadline reached", "TimeoutError")), 45000);
     setBusy(true); setError(""); setRun(null); setReplay(null); setPlaying(false);
     let current: Run | null = null;
     try {
-      const response = await fetch("/api/lab/runs", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(settings), signal: abort.signal });
+      const response = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(settings), signal: abort.signal });
       if (!response.ok) {
         const body = await response.json().catch(() => ({}));
         throw new Error(body.error || `Investigation failed (HTTP ${response.status}).`);
@@ -50,7 +50,7 @@ export function useInvestigation() {
       if (current.status === "complete") setHistory(previous => [current!, ...previous].slice(0, 8));
     } catch (cause) {
       const timedOut = abort.signal.reason?.name === "TimeoutError";
-      const message = abort.signal.aborted ? timedOut ? "This run reached its 90-second deadline. Retry or explore the recorded run." : "Run cancelled." : cause instanceof Error ? cause.message : "The investigation could not finish.";
+      const message = abort.signal.aborted ? timedOut ? "This run reached its 45-second deadline. Retry or explore the recorded run." : "Run cancelled." : cause instanceof Error ? cause.message : "The investigation could not finish.";
       current = interruptRun(current, message, abort.signal.aborted && !timedOut);
       setRun(current); setError(message);
     } finally {

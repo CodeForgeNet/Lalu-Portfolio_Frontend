@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { interruptRun, reduceEvent, replayRun } from "../../src/lib/lab/core.ts";
 import { readSSE } from "../../src/lib/lab/sse.ts";
+import { fallbackFixtures } from "../../src/lib/reliability.ts";
 import type { RunEvent, RunSettings } from "../../src/lib/lab/types.ts";
 
 const settings: RunSettings = { question: "What changed?", documentIds: ["doc"], topK: 2 };
@@ -30,4 +31,11 @@ test("SSE parser handles fragmented frames", async () => {
   const bytes = new TextEncoder().encode('data: {"ok":true}\n\n');
   const stream = new ReadableStream<Uint8Array>({ start(controller) { for (const byte of bytes) controller.enqueue(Uint8Array.of(byte)); controller.close(); } });
   assert.deepEqual(await Array.fromAsync(readSSE(stream)), ['{"ok":true}']);
+});
+
+test("reliability fixtures preserve naive failure and guarded pass", () => {
+  for (const fixture of Object.values(fallbackFixtures)) {
+    assert.equal(fixture.naive.evaluation?.passed, false);
+    assert.equal(fixture.guarded.evaluation?.passed, true);
+  }
 });

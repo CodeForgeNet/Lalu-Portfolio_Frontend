@@ -7,6 +7,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/about",
     "/lab",
     "/lab/documents",
+    "/lab/reliability",
+    "/lab/resume-match",
     ...studies.map((study) => `/projects/${study.slug}`),
   ].map((path) => ({ url: `${profile.url}${path}` }));
 }

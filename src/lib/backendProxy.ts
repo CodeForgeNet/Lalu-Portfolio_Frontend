@@ -1,6 +1,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import type { Corpus } from "@/lib/lab/types";
+import type { ReliabilityScenario } from "@/lib/reliability";
 
 const MAX_BODY_BYTES = 12_000;
 
@@ -68,4 +69,12 @@ export async function getBackendCorpus(): Promise<Corpus> {
   const value = await response.json() as Corpus;
   if (!value || typeof value.version !== "string" || !Array.isArray(value.documents) || !Array.isArray(value.chunks)) throw new Error("The backend returned an invalid document collection.");
   return value;
+}
+
+export async function getReliabilityScenarios(): Promise<ReliabilityScenario[]> {
+  const response = await backendFetch("/api/lab/reliability/scenarios", { signal: AbortSignal.timeout(5000) });
+  if (!response.ok) throw new Error("The reliability catalog is unavailable.");
+  const value = await response.json() as { scenarios?: ReliabilityScenario[] };
+  if (!value || !Array.isArray(value.scenarios)) throw new Error("The backend returned an invalid reliability catalog.");
+  return value.scenarios;
 }

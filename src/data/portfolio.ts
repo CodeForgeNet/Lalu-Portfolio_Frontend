@@ -261,6 +261,127 @@ export const studies: CaseStudy[] = [
       "Source: the public CodeForgeNet/neurosight repository, its README, the PyPI 0.1.1 package page, and owner-provided résumé data. Repository benchmark results are labelled as reported and were not rerun for this portfolio update.",
   },
   {
+    slug: "fitcheck",
+    title: "FitCheck",
+    category: "Personal project · Browser-local AI",
+    year: "2026",
+    headline: "A private, evidence-backed way to read a role.",
+    summary:
+      "A browser-local job-description analyzer that compares role requirements with public resume evidence, then surfaces approximate fit, gaps, and questions to verify.",
+    contribution:
+      "Designed and implemented the FitCheck product, Needle browser integration, Web Worker lifecycle, structured extraction, local embeddings, weighted scoring, privacy controls, recruiter UI, and optional explanation flow.",
+    technologies: ["TypeScript", "Next.js", "Web Workers", "WebAssembly", "Needle", "Embeddings"],
+    outcome:
+      "Recruiters can inspect evidence-backed matches and gaps without sending the original JD to the portfolio backend or storing analysis in a database.",
+    architecture: {
+      caption:
+        "FitCheck · browser-local role analysis path. Open a component to inspect its responsibility.",
+      nodes: [
+        {
+          name: "Job description input",
+          detail:
+            "A recruiter pastes a job description into the analyzer. Input is limited to 200–20,000 characters and remains in page memory for the active session.",
+        },
+        {
+          name: "Needle 3.2 WASM runtime",
+          detail:
+            "Needle is a compact on-device tool-calling runtime. Its pinned browser JavaScript, WASM engine, and model archive load lazily inside a Web Worker so the main UI remains responsive.",
+        },
+        {
+          name: "Structured requirements",
+          detail:
+            "Needle extracts role title, seniority, experience, required skills, preferred skills, responsibilities, and education or certification requirements. Incomplete model fields are supplemented by deterministic local extraction.",
+        },
+        {
+          name: "Resume evidence and embeddings",
+          detail:
+            "FitCheck builds evidence only from public professional fields: skills, experience, projects, education, and certifications. Needle creates in-memory embeddings for extracted requirements and resume evidence.",
+        },
+        {
+          name: "Weighted fit scoring",
+          detail:
+            "Exact normalized aliases receive full matches. Otherwise cosine similarity classifies evidence as match, partial, or gap. Available categories are weighted and missing categories are redistributed without inventing evidence.",
+        },
+        {
+          name: "Optional AI explanation",
+          detail:
+            "After an explicit click, a compact set of derived role and match facts can be sent to the explanation endpoint. The original JD stays local and is never included in that request.",
+        },
+      ],
+    },
+    sections: [
+      {
+        title: "Problem & context",
+        body: "Recruiters often need a quick first read of whether a candidate’s public work relates to a role, but a generic keyword search misses evidence spread across projects, experience, and technical skills. FitCheck turns that first read into an inspectable portfolio signal while keeping the pasted job description inside the recruiter’s browser.",
+      },
+      {
+        title: "What Needle contributes",
+        body: "Needle is a compact local runtime for structured tool calling and embeddings. FitCheck uses the pinned Needle 3.2 browser assets to extract job requirements and create vector representations without Pinecone or a remote embedding call. The runtime and model archive are loaded only when the analyzer opens and run inside a Web Worker.",
+      },
+      {
+        title: "Browser-local pipeline",
+        body: "The page sends the pasted JD and resume evidence to a dedicated worker. The worker initializes Needle, extracts a normalized job profile, creates embeddings for requirements and evidence, and returns only structured results to the UI. The main thread performs deterministic comparison and renders matched requirements, partial matches, gaps, and recruiter prompts.",
+      },
+      {
+        title: "Evidence and scoring model",
+        body: "The weighted score uses required skills at 45%, preferred skills at 10%, responsibilities at 25%, experience and seniority at 15%, and education or certifications at 5%. Exact normalized skill or alias matches receive full credit. Embedding similarity of at least 0.78 is a match, 0.62–0.779 is partial, and below 0.62 is a gap. Missing categories have their weight redistributed proportionally; fewer than two scorable categories returns a not-enough-detail state. The result is an approximate portfolio fit signal, not an ATS result or hiring recommendation.",
+      },
+      {
+        title: "Privacy and optional explanation",
+        body: "Core analysis uses no Pinecone, Redis, database, localStorage, sessionStorage, IndexedDB, cookies, or backend request. JD text, embeddings, and results stay in memory and are cleared on refresh, navigation, page exit, or the Clear action. The optional explanation runs only after an explicit recruiter click and receives compact derived facts rather than the original JD.",
+      },
+      {
+        title: "Failure handling and fallback extraction",
+        body: "Local model output can contain incomplete structured tool calls, so the worker accepts supported Needle response shapes, validates fields, and supplements missing role, experience, skill, responsibility, and education data with deterministic extraction from recognizable JD sections. Low-confidence results remain visible but are labelled directional. A model-load or analysis failure leaves a clear error state instead of producing a fabricated score.",
+      },
+      {
+        title: "Validation and limitations",
+        body: "Unit tests cover normalization, aliases, cosine thresholds, weighted scoring, weight redistribution, and insufficient-detail handling. TypeScript, lint, and production builds validate the frontend integration. The implementation does not claim production recruiter usage, benchmark accuracy, or universal document parsing; V1 accepts pasted text and treats location and personal attributes as outside the score.",
+      },
+    ],
+    decisions: [
+      {
+        title: "Keep JD analysis local",
+        context:
+          "A recruiter may paste confidential role information that should not become portfolio memory or enter the existing retrieval system.",
+        decision:
+          "Run extraction, embeddings, comparison, and scoring in the browser without Pinecone, Redis, persistence, or a core backend request.",
+        consequence:
+          "Privacy and teardown behavior are clear, while model download size and browser capability become visible constraints.",
+      },
+      {
+        title: "Run Needle inside a worker",
+        context:
+          "WASM model initialization and local embedding work can block the interface if performed on the main thread.",
+        decision:
+          "Load pinned Needle browser assets lazily in a dedicated Web Worker and reset its model state between unrelated analyses.",
+        consequence:
+          "The UI stays responsive and the model remains local, at the cost of worker lifecycle and unsupported-WASM handling.",
+      },
+      {
+        title: "Recover from incomplete extraction",
+        context:
+          "A compact local model may return suppressed or partial structured calls for long, formatted job descriptions.",
+        decision:
+          "Validate Needle output and use deterministic section and keyword extraction to fill missing fields before scoring.",
+        consequence:
+          "Valid JDs produce useful directional results more consistently, while fallback confidence and limitations must remain visible.",
+      },
+      {
+        title: "Make cloud explanation opt-in",
+        context:
+          "A polished explanation can help a recruiter, but automatic cloud transmission would conflict with the local-first promise.",
+        decision:
+          "Require an explicit Generate AI explanation action and send only normalized role, match, gap, and resume-evidence facts.",
+        consequence:
+          "The local score remains usable without a provider, while explanation availability depends on backend and OpenRouter configuration.",
+      },
+    ],
+    links: [{ label: "Try FitCheck", href: "/lab/resume-match" }],
+    evidence:
+      "Source: the current FitCheck implementation in src/components/lab/ResumeMatch.tsx, src/lib/resume-match, and public/needle/worker.js; pinned runtime details in public/needle/README.md; the official Cactus Compute Needle repository; and tests/resume-match. No production recruiter usage or benchmark accuracy is claimed.",
+  },
+  {
     slug: "genesis-forge",
     title: "Genesis Forge",
     category: "Open source · Agent orchestration",
