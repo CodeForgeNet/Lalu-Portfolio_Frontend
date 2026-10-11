@@ -29,7 +29,12 @@ export default function Home() {
               <Link href="#work" className="button-primary">
                 Explore the work <span aria-hidden="true">↘</span>
               </Link>
-              <a className="text-link" href={profile.github}>
+              <a
+                className="text-link"
+                href={profile.github}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 GitHub ↗
               </a>
             </div>
@@ -68,7 +73,12 @@ export default function Home() {
                 </span>
                 <h3>{entry.impact}</h3>
                 <p>{entry.description}</p>
-                <a className="text-link" href={entry.href}>
+                <a
+                  className="text-link"
+                  href={entry.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Inspect contribution ↗
                 </a>
               </article>
@@ -170,7 +180,7 @@ export default function Home() {
                   <span>{entry.duration}</span>
                   <span>
                     {entry.type === "apprenticeship"
-                      ? "Apprenticeship"
+                      ? "Internship"
                       : "Professional work"}
                   </span>
                 </div>

@@ -49,11 +49,20 @@ export default async function ProjectPage({ params }: Props) {
         </h1>
         <p>{study.summary}</p>
         <div className="hero-actions">
-          {study.links.map((link) => (
-            <Link className="button-primary" key={link.href} href={link.href}>
-              {link.label} ↗
-            </Link>
-          ))}
+          {study.links.map((link) => {
+            const isExternal = link.href.startsWith("http");
+            return (
+              <Link
+                className="button-primary"
+                key={link.href}
+                href={link.href}
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noopener noreferrer" : undefined}
+              >
+                {link.label} ↗
+              </Link>
+            );
+          })}
         </div>
       </header>
       <div className="case-meta">

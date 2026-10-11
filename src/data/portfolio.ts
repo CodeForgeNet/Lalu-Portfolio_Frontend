@@ -669,6 +669,6 @@ export const experience = resume.experience.map((entry, index) => ({
   description: [
     "Evidence-gated legal drafting systems: document-specific analysis, typed workflow context, deterministic feasibility rules, guardrails, and controlled generation.",
     "Full-stack product engineering for real estate workflows, including authentication, CRM integrations, and real-time application state.",
-    "Java development apprenticeship focused on Spring Boot services, database queries, and reusable application patterns.",
+    "Java development internship focused on Spring Boot services, database queries, and reusable application patterns.",
   ][index],
 }));

@@ -25,9 +25,23 @@ export default function Footer() {
             </span>
           </span>
           <nav aria-label="Professional links">
-            <a href={profile.github}>GitHub ↗</a>
-            <a href={profile.linkedin}>LinkedIn ↗</a>
-            <a href="/docs/Lalu_FullStack-AI-Resume.pdf">Résumé ↗</a>
+            <a href={profile.github} target="_blank" rel="noopener noreferrer">
+              GitHub ↗
+            </a>
+            <a
+              href={profile.linkedin}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              LinkedIn ↗
+            </a>
+            <a
+              href="/docs/Lalu_FullStack-AI-Resume.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Resume ↗
+            </a>
             <Link href="/about">About</Link>
           </nav>
         </div>

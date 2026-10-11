@@ -27,7 +27,12 @@ export default function AboutPage() {
           <a href={`mailto:${profile.email}`} className="button-primary">
             Get in touch ↗
           </a>
-          <a href="/docs/Lalu_FullStack-AI-Resume.pdf" className="text-link">
+          <a
+            href="/docs/Lalu_FullStack-AI-Resume.pdf"
+            className="text-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Read résumé ↗
           </a>
         </div>
