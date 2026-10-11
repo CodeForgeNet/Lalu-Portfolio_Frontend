@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prebuild": "npm --prefix ../Lalu-Portfolio_Backend run knowledge:check",
+    "prebuild": "if [ -f ../Lalu-Portfolio_Backend/package.json ]; then npm --prefix ../Lalu-Portfolio_Backend run knowledge:check; fi",
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
