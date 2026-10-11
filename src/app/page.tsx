@@ -9,10 +9,6 @@ export default function Home() {
       <div className="shell">
         <section className="hero">
           <div className="hero-copy">
-            <p className="eyebrow">
-              <span className="signal-square" /> Independent work. Applied
-              thinking.
-            </p>
             <p className="hero-role">{profile.role}</p>
             <h1>
               From model
