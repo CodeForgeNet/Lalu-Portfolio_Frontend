@@ -1,7 +1,12 @@
 import type { ExtractedMatch, JobProfile, MatchAnalysis, MatchStatus, ResumeEvidence, ScoreBreakdown } from "./types";
 
 export const LIMITS = { minChars: 200, maxChars: 20_000 } as const;
-export const THRESHOLDS = { match: 0.78, partial: 0.62 } as const;
+export const THRESHOLDS = { match: 0.78, partial: 0.62, coverage: 0.75 } as const;
+
+export function calculateExperienceYears(referenceDate = new Date()): number {
+  const careerStart = Date.UTC(2024, 0, 1);
+  return Math.max(0, (referenceDate.getTime() - careerStart) / (365.2425 * 24 * 60 * 60 * 1000));
+}
 
 const aliases: Record<string, string> = {
   javascript: "javascript", js: "javascript", typescript: "typescript", ts: "typescript",
@@ -12,7 +17,7 @@ const aliases: Record<string, string> = {
 };
 
 export function normalize(value: string): string {
-  const cleaned = value.toLowerCase().replace(/[+/#.]/g, " ").replace(/[^a-z0-9\s-]/g, " ").replace(/\s+/g, " ").trim();
+  const cleaned = value.toLowerCase().replace(/[+/#.]/g, " ").replace(/[^a-z0-9\s-]/g, " ").replace(/\bgoogle cloud(?: platform)?\b/g, "gcp").replace(/\bcloud run\b/g, "gcp cloud run").replace(/\s+/g, " ").trim();
   return aliases[cleaned] || cleaned;
 }
 
@@ -33,12 +38,36 @@ export function classifySimilarity(similarity: number): MatchStatus {
   return "gap";
 }
 
-function requirementMatches(requirement: string, evidence: ResumeEvidence[], requirementEmbedding: number[], evidenceEmbeddings: number[][]): ExtractedMatch {
+const stopwords = new Set(["and", "the", "for", "with", "from", "into", "via", "using", "both", "this", "that", "will", "model", "models", "programming", "work"]);
+
+function requirementMatches(requirement: string, section: ExtractedMatch["section"], evidence: ResumeEvidence[], requirementEmbedding: number[], evidenceEmbeddings: number[][]): ExtractedMatch {
   const normalizedRequirement = normalize(requirement);
-  const exact = evidence.find((item) => normalize(item.text).includes(normalizedRequirement) || normalize(normalizedRequirement).includes(normalize(item.text)));
-  const candidates = evidence.map((item, index) => ({ item, similarity: exact?.id === item.id ? 1 : cosineSimilarity(requirementEmbedding, evidenceEmbeddings[index] || []) })).sort((a, b) => b.similarity - a.similarity);
-  const best = candidates[0] || { item: { id: "none", label: "No evidence", text: "" }, similarity: 0 };
-  return { requirement, evidence: best.similarity >= THRESHOLDS.partial ? [best.item.label] : [], similarity: best.similarity, status: classifySimilarity(best.similarity) };
+  const exact = section === "responsibilities" || normalizedRequirement.length < 3 ? undefined : evidence.find((item) => normalize(item.text).includes(normalizedRequirement) || normalize(normalizedRequirement).includes(normalize(item.text)));
+  const tokens = normalizedRequirement.split(" ").filter((token) => token.length > 2 && !stopwords.has(token));
+  const hasLexicalSupport = (text: string) => {
+    if (!tokens.length) return false;
+    const evidenceText = normalize(text);
+    const overlap = tokens.filter((token) => evidenceText.includes(token)).length;
+    return section === "responsibilities"
+      ? overlap >= Math.min(3, tokens.length)
+      : tokens.length <= 1
+      ? tokens.every((token) => evidenceText.includes(token))
+      : overlap >= 2;
+  };
+  const candidates = evidence.map((item, index) => ({
+    item,
+    claimOnly: item.id.startsWith("skills-") || item.id.startsWith("certification-"),
+    lexicalSupport: exact?.id === item.id || hasLexicalSupport(item.text),
+    similarity: exact?.id === item.id ? 1 : cosineSimilarity(requirementEmbedding, evidenceEmbeddings[index] || []),
+  })).filter(({ item }) => section !== "responsibilities" || (!item.id.startsWith("skills-") && !item.id.startsWith("certification-")))
+    .filter(({ item }) => section !== "education" || item.id.startsWith("education-"))
+    .sort((a, b) => Number(b.lexicalSupport) - Number(a.lexicalSupport) || Number(a.claimOnly) - Number(b.claimOnly) || b.similarity - a.similarity);
+  const best = candidates[0] || { item: { id: "none", label: "No evidence", text: "" }, similarity: 0, lexicalSupport: false, claimOnly: false };
+  const status = best.lexicalSupport
+    ? best.claimOnly ? "partial" : tokens.length === 1 ? "match" : classifySimilarity(best.similarity)
+    : section === "responsibilities" && best.similarity >= THRESHOLDS.match ? "partial" : "gap";
+  const hasEvidence = status !== "gap";
+  return { requirement, evidence: hasEvidence ? [best.item.label] : [], evidenceText: hasEvidence ? best.item.text : undefined, section, similarity: best.similarity, status };
 }
 
 function sectionScore(items: ExtractedMatch[]): number | null {
@@ -59,28 +88,33 @@ function scoreSections(scores: Array<[keyof ScoreBreakdown, number | null, numbe
   return { score: Math.round(Object.values(breakdown).reduce((sum, value) => sum + value, 0)), breakdown };
 }
 
-export function analyzeMatch(job: JobProfile, confidence: number, evidence: ResumeEvidence[], requirementEmbeddings: number[][], evidenceEmbeddings: number[][], candidateExperienceYears = 32 / 12): MatchAnalysis {
-  const required = job.requiredSkills.map((item, index) => requirementMatches(item, evidence, requirementEmbeddings[index] || [], evidenceEmbeddings));
+export function analyzeMatch(job: JobProfile, confidence: number, evidence: ResumeEvidence[], requirementEmbeddings: number[][], evidenceEmbeddings: number[][], candidateExperienceYears = 0): MatchAnalysis {
+  const required = job.requiredSkills.map((item, index) => requirementMatches(item, "requiredSkills", evidence, requirementEmbeddings[index] || [], evidenceEmbeddings));
   const preferredOffset = required.length;
-  const preferred = job.preferredSkills.map((item, index) => requirementMatches(item, evidence, requirementEmbeddings[preferredOffset + index] || [], evidenceEmbeddings));
+  const preferred = job.preferredSkills.map((item, index) => requirementMatches(item, "preferredSkills", evidence, requirementEmbeddings[preferredOffset + index] || [], evidenceEmbeddings));
   const responsibilityOffset = preferredOffset + preferred.length;
-  const responsibilities = job.responsibilities.map((item, index) => requirementMatches(item, evidence, requirementEmbeddings[responsibilityOffset + index] || [], evidenceEmbeddings));
+  const responsibilities = job.responsibilities.map((item, index) => requirementMatches(item, "responsibilities", evidence, requirementEmbeddings[responsibilityOffset + index] || [], evidenceEmbeddings));
   const educationOffset = responsibilityOffset + responsibilities.length;
-  const education = job.educationRequirements.map((item, index) => requirementMatches(item, evidence, requirementEmbeddings[educationOffset + index] || [], evidenceEmbeddings));
+  const education = job.educationRequirements.map((item, index) => requirementMatches(item, "education", evidence, requirementEmbeddings[educationOffset + index] || [], evidenceEmbeddings));
   const requiredYears = parseYears(job.minimumYears);
   const hasSeniority = Boolean(job.seniority && job.seniority !== "unspecified");
   const experienceScore = job.minimumYears === null && !hasSeniority ? null : requiredYears !== null ? candidateExperienceYears >= requiredYears ? 1 : candidateExperienceYears >= requiredYears - 1 ? 0.5 : 0 : 0.5;
-  const sections = scoreSections([
-    ["requiredSkills", sectionScore(required), 45],
-    ["preferredSkills", sectionScore(preferred), 10],
-    ["responsibilities", sectionScore(responsibilities), 25],
-    ["experience", experienceScore, 15],
-    ["education", sectionScore(education), 5],
-  ]);
+  const isLeadershipRole = requiredYears !== null && requiredYears >= 5 || ["lead", "manager"].includes(job.seniority);
+  const coverageReady = confidence >= THRESHOLDS.coverage && required.length > 0 && responsibilities.length > 0;
+  const sections = coverageReady ? scoreSections([
+      ["requiredSkills", sectionScore(required), isLeadershipRole ? 40 : 45],
+      ["preferredSkills", sectionScore(preferred), isLeadershipRole ? 5 : 10],
+      ["responsibilities", sectionScore(responsibilities), 25],
+      ["experience", experienceScore, isLeadershipRole ? 30 : 15],
+      ["education", sectionScore(education), 5],
+    ]) : { score: null, breakdown: { requiredSkills: 0, preferredSkills: 0, responsibilities: 0, experience: 0, education: 0 } };
+  const experienceGap = requiredYears !== null && candidateExperienceYears < requiredYears
+    ? `Resume shows ${candidateExperienceYears.toFixed(1)} years against stated ${requiredYears}+ year minimum.`
+    : undefined;
   const all = [...required, ...preferred, ...responsibilities, ...education];
   return {
     score: sections.score,
-    message: sections.score === null ? "Not enough JD detail to calculate a useful match." : undefined,
+    message: sections.score === null ? "Insufficient extraction coverage to calculate a reliable score." : experienceGap,
     confidence,
     job,
     breakdown: sections.breakdown,

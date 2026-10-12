@@ -10,7 +10,7 @@
     "lint": "eslint",
     "test:lab": "node --test tests/lab/*.test.ts",
     "test:chat": "node --test tests/chat/*.test.ts",
-    "test:resume-match": "node --test tests/resume-match/*.test.ts",
+    "test:resume-match": "node --test tests/resume-match/*.test.ts tests/resume-match/*.test.cjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

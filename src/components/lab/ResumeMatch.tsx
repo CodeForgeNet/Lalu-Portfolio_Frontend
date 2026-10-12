@@ -128,12 +128,12 @@ export default function ResumeMatch() {
       </form>
 
       <section className={styles.results} aria-live="polite" aria-label="Match results">
-        {!analysis && <div className={styles.empty}><span className={styles.eyebrow}>Output</span><h2>Results stay in memory.</h2><p>Paste a detailed JD to see matched skills, evidence, gaps, and questions worth verifying.</p></div>}
+        {busy && <div className={styles.empty} aria-live="polite"><span className={styles.eyebrow}>Output</span><h2>Results stay in memory.</h2><p>Paste a detailed JD to see matched skills, evidence, gaps, and questions worth verifying.</p><GeneratingState /></div>}
+        {!busy && !analysis && <div className={styles.empty}><span className={styles.eyebrow}>Output</span><h2>Results stay in memory.</h2><p>Paste a detailed JD to see matched skills, evidence, gaps, and questions worth verifying.</p></div>}
         {analysis && <>
-          <div className={styles.scoreRow}><div><span className={styles.eyebrow}>Approximate portfolio fit</span><h2>{analysis.job.roleTitle}</h2><p className={styles.muted}>Extraction confidence: {Math.round(analysis.confidence * 100)}%</p></div><div className={styles.score}>{analysis.score === null ? "—" : `${analysis.score}`}<small>{analysis.score === null ? "" : "/100"}</small></div></div>
-          {analysis.confidence < 0.55 && <p className={styles.warning}>Low extraction confidence. Treat matches as directional and verify the original JD manually.</p>}
+          <div className={styles.scoreRow}><div><span className={styles.eyebrow}>Approximate portfolio fit</span><h2>{analysis.job.roleTitle}</h2><p className={styles.muted}>Extraction coverage: {Math.round(analysis.confidence * 100)}%</p></div><div className={styles.score} aria-label={analysis.score === null ? "Fit score unavailable out of 100" : `Fit score ${analysis.score} out of 100`}>{analysis.score === null ? "—" : `${analysis.score}`}<small>/100</small></div></div>
           {analysis.message && <p className={styles.warning}>{analysis.message}</p>}
-          <div className={styles.breakdown}>{Object.entries(analysis.breakdown).map(([key, value]) => <div key={key}><span>{key.replace(/([A-Z])/g, " $1")}</span><b>{value}</b></div>)}</div>
+          {analysis.score !== null && <div className={styles.breakdown}>{Object.entries(analysis.breakdown).map(([key, value]) => <div key={key}><span>{key.replace(/([A-Z])/g, " $1")}</span><b>{value}</b></div>)}</div>}
           <MatchList title="Matched" items={analysis.matched} />
           <MatchList title="Partial" items={analysis.partial} />
           <MatchList title="Missing or unverified" items={analysis.gaps} />
@@ -148,5 +148,9 @@ export default function ResumeMatch() {
 
 function MatchList({ title, items }: { title: string; items: MatchAnalysis["matched"] }) {
   if (!items.length) return null;
-  return <section className={styles.matchList}><div className={styles.sectionHeading}><span className={styles.eyebrow}>{title}</span><span>{items.length}</span></div><ul>{items.map((item) => <li key={`${title}-${item.requirement}`}><strong>{item.requirement}</strong>{item.evidence.length > 0 && <small>{item.evidence.join(" · ")}</small>}</li>)}</ul></section>;
+  return <section className={styles.matchList}><div className={styles.sectionHeading}><span className={styles.eyebrow}>{title}</span><span>{items.length}</span></div><ul>{items.map((item) => <li key={`${title}-${item.section}-${item.requirement}`}><strong>{item.requirement}</strong>{(item.evidence.length > 0 || item.section) && <small>{item.section ? `${item.section === "requiredSkills" ? "Required skill" : item.section === "preferredSkills" ? "Preferred skill" : item.section === "responsibilities" ? "Responsibility" : "Education"} · ` : ""}{item.evidence.join(" · ")}{item.evidenceText ? ` — ${item.evidenceText.slice(0, 150)}${item.evidenceText.length > 150 ? "…" : ""}` : ""}</small>}</li>)}</ul></section>;
+}
+
+function GeneratingState() {
+  return <div className={styles.generating} role="status"><span className={styles.generatingMark} aria-hidden="true"><i /><i /><i /></span><span>Generating fit analysis</span></div>;
 }

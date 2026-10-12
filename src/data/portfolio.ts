@@ -300,7 +300,7 @@ export const studies: CaseStudy[] = [
         {
           name: "Weighted fit scoring",
           detail:
-            "Exact normalized aliases receive full matches. Otherwise cosine similarity classifies evidence as match, partial, or gap. Available categories are weighted and missing categories are redistributed without inventing evidence.",
+            "Exact normalized aliases and lexically supported evidence receive full matches. Embedding-only evidence is capped at partial. Available categories are weighted and missing optional categories are redistributed only after extraction coverage passes the score gate.",
         },
         {
           name: "Optional AI explanation",
@@ -324,7 +324,7 @@ export const studies: CaseStudy[] = [
       },
       {
         title: "Evidence and scoring model",
-        body: "The weighted score uses required skills at 45%, preferred skills at 10%, responsibilities at 25%, experience and seniority at 15%, and education or certifications at 5%. Exact normalized skill or alias matches receive full credit. Embedding similarity of at least 0.78 is a match, 0.62–0.779 is partial, and below 0.62 is a gap. Missing categories have their weight redistributed proportionally; fewer than two scorable categories returns a not-enough-detail state. The result is an approximate portfolio fit signal, not an ATS result or hiring recommendation.",
+        body: "The weighted score uses required skills at 45%, preferred skills at 10%, responsibilities at 25%, experience and seniority at 15%, and education or certifications at 5%. Exact normalized skill or alias matches receive full credit; embedding-only evidence is capped at partial. A numeric score requires at least 75% extraction coverage plus required skills and responsibilities. Missing optional categories have their weight redistributed proportionally. The result is an approximate portfolio fit signal, not an ATS result or hiring recommendation.",
       },
       {
         title: "Privacy and optional explanation",
@@ -332,7 +332,7 @@ export const studies: CaseStudy[] = [
       },
       {
         title: "Failure handling and fallback extraction",
-        body: "Local model output can contain incomplete structured tool calls, so the worker accepts supported Needle response shapes, validates fields, and supplements missing role, experience, skill, responsibility, and education data with deterministic extraction from recognizable JD sections. Low-confidence results remain visible but are labelled directional. A model-load or analysis failure leaves a clear error state instead of producing a fabricated score.",
+        body: "Local model output can contain incomplete structured tool calls, so the worker accepts supported Needle response shapes, validates fields, and uses deterministic, heading-aware extraction for role, experience, skills, responsibilities, and education. Required and responsibility sections gate numeric scoring; weak coverage remains visible as evidence and gaps without a fabricated score. A model-load or analysis failure leaves a clear error state.",
       },
       {
         title: "Validation and limitations",
@@ -365,7 +365,7 @@ export const studies: CaseStudy[] = [
         decision:
           "Validate Needle output and use deterministic section and keyword extraction to fill missing fields before scoring.",
         consequence:
-          "Valid JDs produce useful directional results more consistently, while fallback confidence and limitations must remain visible.",
+          "Valid JDs produce useful directional results more consistently, while extraction coverage, conservative matching, and parser limitations remain visible.",
       },
       {
         title: "Make cloud explanation opt-in",

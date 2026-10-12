@@ -19,6 +19,8 @@ export type ResumeEvidence = {
 export type ExtractedMatch = {
   requirement: string;
   evidence: string[];
+  evidenceText?: string;
+  section?: "requiredSkills" | "preferredSkills" | "responsibilities" | "education";
   similarity: number;
   status: MatchStatus;
 };

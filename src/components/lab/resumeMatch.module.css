@@ -24,6 +24,12 @@
 .empty h2, .scoreRow h2 { margin: .5rem 0 .35rem; color: #20211f; font-size: clamp(1.7rem, 4vw, 2.8rem); letter-spacing: -.04em; }
 .empty { min-height: 22rem; display: grid; align-content: center; padding: clamp(1rem, 4vw, 2rem); border: 1px dashed #d2cec5; background: #fffefa; }
 .empty p { color: #65635e; line-height: 1.7; max-width: 420px; }
+.generating { display: inline-flex; align-items: center; gap: .65rem; margin-top: 1.5rem; color: #65635e; font: 700 .72rem/1.2 var(--font-jetbrains-mono), monospace; letter-spacing: .05em; text-transform: uppercase; }
+.generatingMark { display: inline-flex; gap: .22rem; }
+.generatingMark i { width: .42rem; height: .42rem; border-radius: 50%; background: var(--accent, #d34b2d); animation: generatingPulse 1.1s ease-in-out infinite; }
+.generatingMark i:nth-child(2) { animation-delay: .16s; }
+.generatingMark i:nth-child(3) { animation-delay: .32s; }
+@keyframes generatingPulse { 0%, 60%, 100% { opacity: .3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-.22rem); } }
 .scoreRow { align-items: flex-start; }
 .score { font-size: clamp(3rem, 7vw, 5rem); line-height: .9; letter-spacing: -.08em; }
 .score small { font-size: .9rem; letter-spacing: 0; color: var(--muted, #777); }

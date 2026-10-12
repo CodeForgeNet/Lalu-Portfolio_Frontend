@@ -104,30 +104,56 @@ function unique(values, limit) {
 }
 
 function fallbackExtraction(jdText) {
-  const lines = jdText.replace(/\r/g, "").split("\n").map((line) => line.trim()).filter(Boolean);
-  const searchableText = jdText.replace(/back to all roles\s*/i, "\n");
+  const sourceText = jdText.replace(/&#(?:x20|32);|&nbsp;/gi, " ").replace(
+    /\b(Role\s*&\s*Responsibilities|Key Responsibilities|Responsibilities|Skills\s*&\s*Qualifications|Required Skills\s*&\s*Qualifications|Requirements|Must[- ]Have|Good to Have|Nice to Have|Preferred Qualifications|Preferred|Who Will Thrive in This Role|What We Offer|Benefits\s*&\s*Culture Highlights)\b/gi,
+    "\n$1\n",
+  );
+  const lines = sourceText.replace(/\r/g, "").split("\n").map((line) => line.trim()).filter(Boolean);
+  const headingLines = lines.map((line) => line.replace(/^[*#\s]+|[*#\s:]+$/g, "").trim());
+  const searchableText = sourceText.replace(/back to all roles\s*/i, "\n");
   const section = (start, ends) => {
-    const startIndex = lines.findIndex((line) => start.test(line));
+    const startIndex = headingLines.findIndex((line) => start.test(line));
     if (startIndex < 0) return [];
     const following = lines.slice(startIndex + 1);
-    const endIndex = following.findIndex((line) => ends.some((pattern) => pattern.test(line)));
+    const endIndex = headingLines.slice(startIndex + 1).findIndex((line) => ends.some((pattern) => pattern.test(line)));
     return (endIndex < 0 ? following : following.slice(0, endIndex)).filter((line) => line.length > 2);
   };
-  const responsibilities = section(/^what (?:you.ll|you will) do$/i, [/^what we.re looking for$/i, /^requirements?$/i, /^nice to have$/i]);
-  const requiredLines = section(/^(?:what we.re looking for|requirements?|qualifications?)$/i, [/^nice to have$/i, /^preferred/i, /^benefits?$/i]);
-  const preferredLines = section(/^(?:nice to have|preferred(?: qualifications?)?)$/i, [/^benefits?$/i, /^about (?:us|the company)$/i]);
+  const responsibilityHeading = /^(?:key\s+)?responsibilities(?:\s*&.*)?$|^role\s*&\s*responsibilities$|^what (?:you.ll|you will) do$/i;
+  const requiredHeading = /^(?:required\s+)?(?:technical\s+)?(?:skills(?:\s*&\s*qualifications)?|requirements?|qualifications?)$|^must[- ]have$/i;
+  const preferredHeading = /^(?:good\s+to\s+have|nice\s+to\s+have|preferred(?:\s+qualifications?)?)$/i;
+  const sectionEnd = [requiredHeading, preferredHeading, /^benefits?(?:\s*&.*)?$/i, /^who will thrive/i, /^what we offer/i];
+  const responsibilities = section(responsibilityHeading, sectionEnd).filter((line) => !/^(?:design\s*&\s*build|client\s*&\s*delivery|training\s*&\s*capability building)$/i.test(line));
+  const requiredLines = section(requiredHeading, [preferredHeading, /^benefits?(?:\s*&.*)?$/i, /^who will thrive/i, /^what we offer/i]);
+  const preferredLines = section(preferredHeading, [/^benefits?(?:\s*&.*)?$/i, /^about (?:us|the company)$/i, /^who will thrive/i, /^what we offer/i]);
   const skills = [
-    ["LLM-backed systems", /\bLLM(?:-backed)?\b/i], ["AI agents", /\bAI agents?\b/i], ["tool use", /\btool use\b/i],
-    ["retrieval", /\bretrieval\b/i], ["evals", /\bevals?(?: frameworks?)?\b/i], ["monitoring", /\bmonitoring\b/i],
+    ["LLM-backed systems", /\bLLM(?:-backed)?\b/i], ["AI agents", /\bAI agents?\b/i], ["tool use", /\btool use\b|\btool (?:and |\/)function calling\b/i],
+    ["retrieval", /\bretrieval\b/i], ["evals", /\bevals?(?: frameworks?)?\b/i], ["AI/ML Ops monitoring", /\bmonitoring\b/i],
     ["guardrails", /\bguardrails?\b/i], ["retries", /\bretr(?:y|ies)\b/i], ["observability", /\bobservability\b/i],
-    ["TypeScript", /\bTypeScript\b/i], ["Python", /\bPython\b/i], ["API development", /\bAPI(?: layer|s)?\b/i],
+    ["Python", /\bPython\b/i], ["Java", /\bJava\b/i], ["R", /\bR(?:\s+code|\s+programming)?\b/i], ["NumPy", /\bNumPy\b/i], ["Pandas", /\bPandas\b/i], ["Scikit-learn", /\bscikit[- ]learn\b/i],
+    ["TensorFlow", /\bTensorFlow(?:\.js)?\b/i], ["PyTorch", /\bPyTorch\b/i], ["regression", /\bregression(?=\s*(?:,|and classification|models?|analysis))\b/i],
+    ["classification", /\bclassification\b/i], ["clustering", /\bclustering\b/i], ["time series", /\btime series\b/i],
+    ["NLP", /\bNLP\b|natural language processing/i], ["statistics", /\bstatistics?\b|statistical analysis/i], ["algorithms", /\balgorithms?\b/i], ["data structures", /\bdata structures?\b/i], ["data modeling", /\bdata modeling\b/i], ["software architecture", /\bsoftware architecture\b/i], ["recommendation systems", /\brecommendation systems?\b|user recommendations?/i], ["image tagging", /\bauto-tagging images?\b|image tagging/i], ["text-to-speech", /\btext-to-speech\b/i], ["feature engineering", /\bfeature engineering\b/i],
+    ["hyperparameter tuning", /\bhyperparameter tuning\b/i], ["model optimization", /\bmodel optimization\b/i],
+    ["MLflow", /\bMLflow\b/i], ["Weights & Biases", /\bWeights\s*&\s*Biases\b/i], ["pipeline automation", /\bpipeline automation\b/i],
+    ["TypeScript", /\bTypeScript\b/i], ["FastAPI", /\bFastAPI\b/i], ["Flask", /\bFlask\b/i], ["API development", /\bREST APIs?\b|\bAPI(?: layer|s)?\b/i], ["async programming", /\basynchronous programming\b|\basync programming\b/i],
+    ["Azure", /\bAzure(?: ML)?\b/i], ["AWS", /\bAWS\b|Amazon Web Services/i], ["GCP", /\bGCP\b|Google Cloud/i], ["Git", /\bGit\b/i],
+    ["Docker", /\bDocker\b/i], ["Kubernetes", /\bKubernetes\b/i], ["feature stores", /\bfeature stores?\b/i],
     ["databases", /\bdatabases?\b/i], ["frontend development", /\bfront[ -]?end\b/i], ["RAG", /\bRAG\b/i],
-    ["agent orchestration", /\bagent orchestration\b/i], ["open-source work", /\bopen[ -]?source\b/i],
+    ["prompt engineering", /\bprompt engineering\b/i], ["fine-tuning", /\bfine[- ]tuning\b/i], ["LangChain", /\bLangChain\b/i],
+    ["LlamaIndex", /\bLlamaIndex\b/i], ["OpenAI API", /\bOpenAI API\b/i], ["computer vision", /\bcomputer vision\b/i],
+    ["Pinecone", /\bPinecone\b/i], ["Weaviate", /\bWeaviate\b/i], ["ChromaDB", /\bChromaDB\b/i], ["Azure ML", /\bAzure ML\b/i],
+    ["agent orchestration", /\bagent orchestration\b|\borchestration and state management\b/i], ["agent memory", /\bagent memory\b/i],
+    ["human-in-the-loop", /\bhuman-in-the-loop\b|\bhuman must approve\b/i], ["permissioning and sandboxing", /\bpermissioning and sandboxing\b/i],
+    ["agent tracing", /\bLangfuse\b|\bLangSmith\b|\bArize Phoenix\b/i], ["MCP", /\bMCP\b|Model Context Protocol/i],
+    ["LlamaIndex", /\bLlamaIndex\b/i], ["Semantic Kernel", /\bSemantic Kernel\b/i], ["Google ADK", /\bGoogle ADK\b/i],
+    ["SQL and NoSQL", /\bSQL and NoSQL\b/i], ["CI/CD", /\bCI\/CD\b/i], ["IAM and secrets management", /\bIAM\b.*\bsecrets management\b/i],
+    ["open-source work", /\bopen[ -]?source\b/i],
   ];
   const extractSkills = (text) => skills.filter(([, pattern]) => pattern.test(text)).map(([label]) => label);
-  const requiredText = requiredLines.join(" ") || jdText;
+  const requiredText = requiredLines.join(" ");
   const preferredText = preferredLines.join(" ");
-  const titleMatch = searchableText.match(/\b((?:AI|ML|Machine Learning|Software|Full[ -]?Stack|Backend|Frontend|Data)(?:\s+[A-Za-z]+){0,3}\s+(?:Engineer|Developer|Architect|Scientist|Manager|Specialist|Analyst))\b/i)
+  const titleMatch = searchableText.match(/\b((?:Lead|Senior|Staff|Principal|Junior)\s+(?:[A-Za-z&\/-]+\s+){0,7}(?:Engineer|Developer|Architect|Scientist|Manager|Specialist|Analyst))\b/i)
+    || searchableText.match(/\b((?:AI[\/-]?ML|AI|ML|Machine Learning|Software|Full[ -]?Stack|Backend|Frontend|Data)(?:\s+[A-Za-z]+){0,3}\s+(?:Engineer|Developer|Architect|Scientist|Manager|Specialist|Analyst))\b/i)
     || searchableText.match(/\b((?:Senior|Staff|Lead|Principal|Junior)?\s*(?:Engineer|Developer|Architect|Scientist|Manager|Specialist|Analyst))\b/i);
   const yearsMatch = jdText.match(/\b(\d+(?:\.\d+)?)\s*\+?\s*(?:years?|yrs?)\b/i);
   const title = titleMatch?.[1]?.replace(/\s+/g, " ").trim() || "Unspecified role";
@@ -141,6 +167,9 @@ function fallbackExtraction(jdText) {
     preferredSkills: unique(extractSkills(preferredText), 30),
     responsibilities: unique(responsibilities, 20),
     educationRequirements: unique(lines.filter((line) => /\b(?:bachelor|master|degree|certification)\b/i.test(line)), 10),
+    hasRequiredSection: headingLines.some((line) => requiredHeading.test(line)),
+    hasPreferredSection: headingLines.some((line) => preferredHeading.test(line)),
+    hasResponsibilitySection: headingLines.some((line) => responsibilityHeading.test(line)),
   };
 }
 
@@ -152,14 +181,18 @@ function parseExtraction(result, jdText) {
     ? String(value.seniority).toLowerCase()
     : fallback.seniority;
   const cleanModelItems = (items, limit) => Array.isArray(items) ? unique(items.filter((item) => String(item).length <= 160), limit) : [];
+  const canonical = (item) => String(item).toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+  const requiredSkills = fallback.hasRequiredSection ? fallback.requiredSkills : unique([...cleanModelItems(value.requiredSkills, 30), ...fallback.requiredSkills], 30);
+  const preferredSkills = fallback.hasPreferredSection ? fallback.preferredSkills : unique([...cleanModelItems(value.preferredSkills, 30), ...fallback.preferredSkills], 30);
+  const requiredSet = new Set(requiredSkills.map(canonical));
   return {
-    roleTitle: modelRole && !/^unspecified(?: role)?$/i.test(modelRole) ? modelRole : fallback.roleTitle,
+    roleTitle: fallback.roleTitle !== "Unspecified role" ? fallback.roleTitle : modelRole,
     seniority,
-    minimumYears: Number.isFinite(Number(value.minimumYears)) ? Number(value.minimumYears) : fallback.minimumYears,
-    requiredSkills: unique([...cleanModelItems(value.requiredSkills, 30), ...fallback.requiredSkills], 30),
-    preferredSkills: unique([...cleanModelItems(value.preferredSkills, 30), ...fallback.preferredSkills], 30),
-    responsibilities: unique([...cleanModelItems(value.responsibilities, 20), ...fallback.responsibilities], 20),
-    educationRequirements: unique([...cleanModelItems(value.educationRequirements, 10), ...fallback.educationRequirements], 10)
+    minimumYears: value.minimumYears !== null && value.minimumYears !== undefined && Number.isFinite(Number(value.minimumYears)) ? Number(value.minimumYears) : fallback.minimumYears,
+    requiredSkills,
+    preferredSkills: preferredSkills.filter((item) => !requiredSet.has(canonical(item))),
+    responsibilities: fallback.hasResponsibilitySection ? fallback.responsibilities : unique([...cleanModelItems(value.responsibilities, 20), ...fallback.responsibilities], 20),
+    educationRequirements: fallback.educationRequirements
   };
 }
 
@@ -188,6 +221,7 @@ self.onmessage = async (event) => {
 };
 
 function resultConfidence(value) {
-  const fields = [value.roleTitle !== "Unspecified role", value.requiredSkills.length, value.preferredSkills.length, value.responsibilities.length];
-  return fields.filter(Boolean).length / fields.length;
+  return (value.roleTitle !== "Unspecified role" ? 0.25 : 0)
+    + (value.requiredSkills.length ? 0.375 : 0)
+    + (value.responsibilities.length ? 0.375 : 0);
 }

@@ -60,14 +60,14 @@
     }
   ],
   "technical_skills": {
-    "ai_llm": ["LangChain", "LangGraph", "RAG Pipelines", "Semantic Chunking", "Prompt Evaluation", "LLM Cost Optimization", "Agentic Systems", "Multi-Agent Orchestration", "Anthropic MCP", "Fine-tuning (LoRA/QLoRA)"],
+    "ai_llm": ["LLM-backed Systems", "LangChain", "LangGraph", "RAG Pipelines", "Semantic Chunking", "Prompt Evaluation", "LLM Cost Optimization", "Agentic Systems", "Multi-Agent Orchestration", "Human-in-the-Loop", "Agent Memory", "Agent Tracing", "LLM Observability", "Anthropic MCP", "Fine-tuning (LoRA/QLoRA)"],
     "embeddings_vector": ["OpenAI Embeddings", "Gemini Embeddings", "Sentence Transformers", "Pinecone", "pgvector"],
     "ai_frameworks": ["OpenAI API", "Anthropic API", "Gemini API", "Groq", "HuggingFace Transformers"],
-    "languages": ["TypeScript", "Python", "Java", "JavaScript"],
+    "languages": ["TypeScript", "Python", "Async Programming", "Java", "JavaScript"],
     "backend": ["Node.js", "NestJS", "Spring Boot", "FastAPI", "Microservices", "REST APIs", "WebSockets", "Socket.io"],
     "frontend": ["Next.js 15", "React 19", "Tailwind CSS 4", "Framer Motion", "Redux Toolkit", "Zustand"],
-    "cloud_devops": ["AWS Lambda", "AWS S3", "AWS EC2", "Google Cloud Run", "Docker", "GitHub Actions CI/CD", "Supabase"],
-    "databases": ["PostgreSQL", "MongoDB", "Redis (Upstash)", "MySQL"],
+    "cloud_devops": ["AWS Lambda", "AWS S3", "AWS EC2", "Google Cloud Platform (GCP)", "Google Cloud Run", "IAM", "Secrets Management", "Docker", "GitHub Actions CI/CD", "Supabase"],
+    "databases": ["SQL", "NoSQL", "PostgreSQL", "MongoDB", "Redis (Upstash)", "MySQL"],
     "testing_eval": ["Postman", "LLM output evaluation", "ROUGE", "Semantic similarity scoring"]
   },
   "experience": [
@@ -78,8 +78,8 @@
       "duration": "Apr 2026 – Present",
       "type": "full-time",
       "details": [
-        "Built Expert Witness Tool Legal AI SaaS (React, Node.js, Express): hybrid RAG pipeline (HyDE + BM25 + Pinecone + RRF + Cohere rerank-v3.5) with parent-child chunking achieving 98.5% retrieval precision and 10x faster response vs. prior n8n workflow.",
-        "Reduced per-case AI processing cost by 125x ($2.00 → $0.016) via async BullMQ + Redis job queuing, SHA-256 file deduplication, and multi-layer caching, eliminating redundant re-embedding on unchanged documents."
+        "Built and shipped two production LLM-backed legal AI systems for law firms: Expert Witness Tool, a hybrid RAG pipeline using HyDE, BM25, RRF, Cohere reranking, and parent-child chunking that achieved 98.5% retrieval precision; and Drafting Tool, a fully harnessed multi-agent system with a 10-stage deterministic workflow, source traceability, and rule-based safety gates that refuse unsupported content.",
+        "Engineered guardrails separating LLM interpretation from deterministic decision logic; harnessed 7 specialized agents with typed context propagation and Jest coverage preventing hallucination. Reduced per-case cost by 125x ($2.00 → $0.016) through async queuing and SHA-256 deduplication, with sub-100ms source traceability across 100+ page documents in production."
       ],
       "metrics": ["98.5% retrieval precision", "10x faster response", "125x cost reduction ($2.00 → $0.016)"]
     },

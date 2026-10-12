@@ -3,7 +3,7 @@ import type { JobProfile, NeedleWorkerResponse, ResumeEvidence } from "./types";
 type WorkerResult = { job: JobProfile; confidence: number; requirementEmbeddings: number[][]; evidenceEmbeddings: number[][] };
 
 export function createNeedleClient(onStatus: (status: string) => void, onError: (message: string) => void) {
-  const worker = new Worker("/needle/worker.js?v=20261012-4");
+  const worker = new Worker("/needle/worker.js?v=20261012-9");
   let pending: { resolve: (result: WorkerResult) => void; reject: (error: Error) => void } | null = null;
   worker.onmessage = (event: MessageEvent<NeedleWorkerResponse>) => {
     const message = event.data;
